@@ -37,11 +37,11 @@ BUILTIN-SPEAKER-PIN ::= 4
 
 // Constants for the motor driver
 
-LEFT-MOTOR-DIR-PIN ::= 8
-LEFT-MOTOR-PWM-PIN ::= 9
+LEFT-MOTOR-DIR-PIN ::= 9
+LEFT-MOTOR-PWM-PIN ::= 8
 
-RIGHT-MOTOR-DIR-PIN ::= 44
-RIGHT-MOTOR-PWM-PIN ::= 7
+RIGHT-MOTOR-DIR-PIN ::= 7
+RIGHT-MOTOR-PWM-PIN ::= 44
 
 // Constants for the motor encoders
 
