@@ -1,6 +1,7 @@
-import .display
+import ..display
 
 main:
   display := Display
-  display.add-text "Hello, CS 181R!"
+  display.add-text "Munir + Kerick"
+
   display.draw
