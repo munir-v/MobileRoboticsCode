@@ -5,9 +5,11 @@ class LedBlinker implements Communicator:
 
   led := Led
   state := Communicator.DISABLED
+  blinking := false
 
   constructor:
     led.off
+    task:: start-blinking
 
   on-start address port: print "$address:$port"
   on-open: enable
@@ -23,27 +25,26 @@ class LedBlinker implements Communicator:
     if state == Communicator.ENABLED: return
     print "Enabling"
     state = Communicator.ENABLED
+    blinking = true
     led.on
 
   disable:
     if state == Communicator.DISABLED: return
     print "Disabling"
     state = Communicator.DISABLED
+    blinking = false
     led.off
 
-main:
-  led-blinker := LedBlinker
-  led-blinker.enable
-  // I had to comment the line below to get the led to blink
-  // comm := WsCommunication led-blinker --heartbeat-ms=1000 
+  start-blinking:
+    while true:
+      if blinking:
+        led.on
+        sleep --ms=250
+        led.off
+        sleep --ms=250
+      else:
+        sleep --ms=1000
 
-// make the LED blink every 250 ms, but only when the LedBlinker object is enabled.
-  while true:
-    if led-blinker.is-enabled:
-      led-blinker.led.on
-      sleep --ms=250
-      led-blinker.led.off
-      sleep --ms=250
-    else:
-      sleep --ms=1000
-      
+main:  
+  led-blinker := LedBlinker  
+  comm := WsCommunication led-blinker --heartbeat-ms=1000
