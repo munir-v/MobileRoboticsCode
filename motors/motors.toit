@@ -41,15 +41,18 @@ class Motor:
 class Encoder:
   // 7 pulses per rotation, 2x due to quadrature, 50:1 gear ratio
   static COUNTS-PER-ROTATION := 7 * 2 * 50
-  static WHEEL-DIAMETER := 0.07
-  static WHEEL-CIRCUMFERENCE := WHEEL-DIAMETER * PI
+
+  wheel-circumference/float
 
   pin-a/Pin
   pin-b/Pin
   unit := Unit // TODO: use filter?
   channel/Channel
 
-  constructor a/int b/int:
+  constructor a/int b/int wheel-diameter:
+
+    wheel-circumference = wheel-diameter * PI
+
     pin-a = Pin.in a
     pin-b = Pin.in b
 
@@ -61,13 +64,11 @@ class Encoder:
         --when-control-low=Unit.KEEP
         --when-control-high=Unit.REVERSE
 
-  get-speed:
+  get-speed time-delta:
     count := unit.value
     unit.clear
     rotation := count.to-float / COUNTS-PER-ROTATION
-    distance := rotation * WHEEL-CIRCUMFERENCE
-    // TODO: pass in time-delta?
-    time-delta := 0.5
+    distance := rotation * wheel-circumference
     speed := distance / time-delta
     return speed
 
@@ -81,8 +82,12 @@ class Motors:
   left-motor := Motor LEFT-MOTOR-DIR-PIN LEFT-MOTOR-PWM-PIN
   right-motor := Motor RIGHT-MOTOR-DIR-PIN RIGHT-MOTOR-PWM-PIN
 
-  left-encoder := Encoder LEFT-ENCODER-PIN LEFT-ENCODER-CONTROL-PIN
-  right-encoder := Encoder RIGHT-ENCODER-PIN RIGHT-ENCODER-CONTROL-PIN
+  left-encoder/Encoder
+  right-encoder/Encoder
+
+  constructor wheel-diameter:
+    left-encoder = Encoder LEFT-ENCODER-PIN LEFT-ENCODER-CONTROL-PIN wheel-diameter
+    right-encoder = Encoder RIGHT-ENCODER-PIN RIGHT-ENCODER-CONTROL-PIN wheel-diameter
 
   set-speed-forward speed/float:
     left-motor.set-speed speed

@@ -1,5 +1,13 @@
 import .motors
 
+display-speed motors/Motors time-ms:
+  time-delta := time-ms / 1000.0
+
+  left-speed := (motors.left-encoder.get-speed time-delta) * 100
+  right-speed := (motors.right-encoder.get-speed time-delta) * 100
+
+  print "Left: $(%.2f left-speed) cm/s, Right: $(%.2f right-speed) cm/s"
+
 main:
   time-to-run := 3_000
   time-to-stop := 1_000
@@ -9,14 +17,14 @@ main:
 
   half-speed := 0.5
 
-  motors := Motors
+  motors := Motors 0.07
 
   while true:
 
     print "Running forward..."
     motors.set-speed-forward half-speed
     updates.repeat:
-      print "Left: $(%.2f (motors.left-encoder.get-speed*100)), Right: $(%.2f (motors.right-encoder.get-speed*100))"
+      display-speed motors time-between-updates
       sleep --ms=time-between-updates
 
     print "Stopping..."
@@ -26,7 +34,7 @@ main:
     print "Running reverse..."
     motors.set-speed-forward -half-speed
     updates.repeat:
-      print "Left: $(%.2f (motors.left-encoder.get-speed*100)), Right: $(%.2f (motors.right-encoder.get-speed*100))"
+      display-speed motors time-between-updates
       sleep --ms=time-between-updates
 
     print "Stopping..."
