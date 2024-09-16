@@ -1,12 +1,14 @@
 import ..display
 import ..communication
 import ..led
+import ..motors
 
 class LedBlinker implements Communicator:
 
   led := Led
   state := Communicator.DISABLED
   display := Display
+  motors := Motors
 
   constructor:
     led.off
@@ -30,12 +32,15 @@ class LedBlinker implements Communicator:
     print "Enabling"
     state = Communicator.ENABLED
     led.on
+    motors.set-speed-forward 0.25
 
   disable:
     if state == Communicator.DISABLED: return
     print "Disabling"
     state = Communicator.DISABLED
     led.off
+    motors.stop
+
 
 main:
   led-blinker := LedBlinker
