@@ -13,10 +13,9 @@ main:
 
   while true:
 
-    print "Rotate in place..."
+    print "Rotating in place..."
     motors.left-motor.set-speed 0.5
     motors.right-motor.set-speed -0.5
-
     updates.repeat:
       print "Left: $(%.2f (motors.left-encoder.get-speed*100)), Right: $(%.2f (motors.right-encoder.get-speed*100))"
       sleep --ms=time-between-updates
@@ -24,5 +23,6 @@ main:
     print "Stopping..."
     motors.stop
     sleep --ms=time-to-stop
+
 
   motors.close
