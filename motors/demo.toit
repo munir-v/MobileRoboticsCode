@@ -29,7 +29,7 @@ main:
   while true:
 
     print "Running forward..."
-    motors.set-forward-speed-scaled half-speed
+    motors.set-motors-speed-factor half-speed
     updates.repeat:
       display-speed motors time-between-updates wheel-circumference-cm
       sleep --ms=time-between-updates
@@ -39,7 +39,7 @@ main:
     sleep --ms=time-to-stop
 
     print "Running reverse..."
-    motors.set-forward-speed-scaled -half-speed
+    motors.set-motors-speed-factor -half-speed
     updates.repeat:
       display-speed motors time-between-updates wheel-circumference-cm
       sleep --ms=time-between-updates

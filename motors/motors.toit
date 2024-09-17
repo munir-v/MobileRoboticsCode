@@ -31,15 +31,15 @@ class Motor:
     duty-factor = constrain duty-factor 0.0 1.0
     pwm-channel.set-duty-factor duty-factor
 
-  set-speed-scaled speed-scale/float:
-    speed-scale = constrain speed-scale -1.0 1.0
+  set-speed-factor speed-factor/float:
+    speed-factor = constrain speed-factor -1.0 1.0
 
     // Set direction based on the sign
-    direction := speed-scale > 0.0 ? FORWARD : REVERSE
+    direction := speed-factor > 0.0 ? FORWARD : REVERSE
     dir-pin.set direction
 
     // Set speed based on the absolute value and the minimum factor
-    duty-factor := map speed-scale.abs 0.0 1.0 pwm-min-factor 1.0
+    duty-factor := map speed-factor.abs 0.0 1.0 pwm-min-factor 1.0
     pwm-channel.set-duty-factor duty-factor
 
   stop:
@@ -101,9 +101,9 @@ class Motors:
     left-encoder = Encoder LEFT-ENCODER-PIN LEFT-ENCODER-CONTROL-PIN
     right-encoder = Encoder RIGHT-ENCODER-PIN RIGHT-ENCODER-CONTROL-PIN
 
-  set-forward-speed-scaled speed/float:
-    left-motor.set-speed-scaled speed
-    right-motor.set-speed-scaled speed
+  set-motors-speed-factor speed-factor/float:
+    left-motor.set-speed-factor speed-factor
+    right-motor.set-speed-factor speed-factor
 
   stop:
     left-motor.stop
