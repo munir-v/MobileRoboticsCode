@@ -1,14 +1,21 @@
+import math show PI
+
 import .motors
 
-display-speed motors/Motors time-ms:
+display-speed motors/Motors time-ms/int wheel-circumference-cm/float:
   time-delta := time-ms / 1000.0
 
-  left-speed := (motors.left-encoder.get-speed time-delta) * 100
-  right-speed := (motors.right-encoder.get-speed time-delta) * 100
+  left-rot-per-s := motors.left-encoder.get-rotation-rate time-delta
+  left-speed-cm-per-s := left-rot-per-s * wheel-circumference-cm
 
-  print "Left: $(%.2f left-speed) cm/s, Right: $(%.2f right-speed) cm/s"
+  right-rot-per-s := motors.right-encoder.get-rotation-rate time-delta
+  right-speed-cm-per-s := right-rot-per-s * wheel-circumference-cm
+
+  print "Left: $(%.2f left-speed-cm-per-s) cm/s, Right: $(%.2f right-speed-cm-per-s) cm/s"
 
 main:
+  wheel-circumference-cm := 7.0 * PI
+
   time-to-run := 3_000
   time-to-stop := 1_000
   time-between-updates := 500
@@ -17,14 +24,14 @@ main:
 
   half-speed := 0.5
 
-  motors := Motors 0.07
+  motors/Motors := Motors
 
   while true:
 
     print "Running forward..."
-    motors.set-speed-forward half-speed
+    motors.set-forward-speed-scaled half-speed
     updates.repeat:
-      display-speed motors time-between-updates
+      display-speed motors time-between-updates wheel-circumference-cm
       sleep --ms=time-between-updates
 
     print "Stopping..."
@@ -32,9 +39,9 @@ main:
     sleep --ms=time-to-stop
 
     print "Running reverse..."
-    motors.set-speed-forward -half-speed
+    motors.set-forward-speed-scaled -half-speed
     updates.repeat:
-      display-speed motors time-between-updates
+      display-speed motors time-between-updates wheel-circumference-cm
       sleep --ms=time-between-updates
 
     print "Stopping..."
