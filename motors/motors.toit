@@ -43,7 +43,7 @@ class Motor:
     pwm-channel.set-duty-factor duty-factor
 
   stop:
-    set-speed-scaled 0.0
+    pwm-channel.set-duty-factor 0
 
   close:
     pwm-channel.close
