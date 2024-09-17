@@ -5,3 +5,6 @@ constrain value/float lo/float hi/float:
 /// Map a value from [from-lo, from-hi] to [to-lo, to-hi]
 map value/float from-lo/float from-hi/float to-lo/float to-hi/float:
   return (value - from-lo) * (to-hi - to-lo) / (from-hi - from-lo) + to-lo
+
+is-near a/float b/float:
+  return (a - b).abs < 0.01
