@@ -1,6 +1,8 @@
-import .display
+import ..src.display
+
+import ...pinout
 
 main:
-  display := Display
+  display := Display SDA-PIN SCL-PIN
   display.add-text "Hello, CS 181R!"
   display.draw
