@@ -1,13 +1,12 @@
-import .communication
-import ..led
+import ..src.communication
+import ...led
 
 class LedBlinker implements Communicator:
 
   led := Led
   state := Communicator.DISABLED
 
-  constructor:
-    led.off
+  constructor: led.off
 
   on-start address port: print "$address:$port"
   on-open: enable
