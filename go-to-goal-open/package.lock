@@ -2,9 +2,6 @@ sdk: ^2.0.0-alpha.145
 prefixes:
   communication: communication
   display: display
-  http: pkg-http
-  pixel_display: toit-pixel-display
-  ssd1306: toit-ssd1306
 packages:
   communication:
     path: ../communication

@@ -1,13 +1,14 @@
-import ..display
-import ..communication
+import display show Display 
+import communication show Communicator WsCommunication
 import ..led
 import ..motors
+import ..pinout
 
 class LedBlinker implements Communicator:
 
-  led := Led
+  led := Led 
   state := Communicator.DISABLED
-  display := Display
+  display := Display SDA-PIN SCL-PIN
   motors := Motors
 
   constructor:
