@@ -42,14 +42,13 @@ class LedBlinker implements Communicator:
     motors.stop
 
 main:
+  led-blinker := LedBlinker
   comm := WsCommunication led-blinker --heartbeat-ms=7_500
 
-  left-wheel := comm.motors.left-encoder
-  float duty_factor := 0.0
-  
+  left-wheel := led-blinker.motors.left-encoder.get-speed
+  duty_factor/float := 0.0
 
-
-  while duty_factor <= 1.0 and left-wheel == comm.motors.left-encoder:
-    set-pwm-duty-factor duty-factor
+  while duty_factor <= 1.0 and left-wheel == led-blinker.motors.left-encoder:
+    led-blinker.motors.set-pwm-duty-factor duty-factor
     duty-factor += 0.01
     print duty-factor
