@@ -44,12 +44,21 @@ class LedBlinker implements Communicator:
 main:
   led-blinker := LedBlinker
   comm := WsCommunication led-blinker --heartbeat-ms=7_500
+  sleep --ms=3000
 
-  left-wheel := led-blinker.motors.left-encoder.get-rotation-rate
   duty_factor/float := 0.0
-
-  while duty_factor <= 1.0 and left-wheel == led-blinker.motors.left-encoder.get-rotation-rate:
-    led-blinker.motors.set-pwm-duty-factor duty-factor
-    duty-factor += 0.01
-    sleep --ms=500
-    print duty-factor
+  left-wheel := led-blinker.motors.left-encoder.get-rotation-rate 50
+  
+  while duty_factor <= 1.0:
+    left-wheel-change := led-blinker.motors.left-encoder.get-rotation-rate 50
+    // print left-wheel - left-wheel-change
+    if left-wheel-change - left-wheel < 0.00001:
+      duty-factor += 0.01
+      led-blinker.motors.left-motor.set-pwm-duty-factor duty-factor
+      sleep --ms=50
+      print duty-factor
+    else:
+      print "Breaking..."
+      led-blinker.motors.left-motor.set-pwm-duty-factor 0.0
+      break
+    
