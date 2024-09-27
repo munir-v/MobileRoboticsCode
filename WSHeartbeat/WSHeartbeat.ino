@@ -19,7 +19,7 @@ typedef enum {
 
 // WebSocket server configuration and state
 const int PORT = 8181;
-const char* ssid = "Pomona";
+const char* SSID = "Pomona";
 WebSocketsServer webSocket = WebSocketsServer(PORT);
 
 // Heartbeat state
@@ -104,8 +104,8 @@ void setup() {
   Serial.begin(115200);
 
   // Connect to WiFi network
-  WiFi.begin(ssid);
-  Serial.printf("\n[SETUP] Connecting to '%s'... ", ssid);
+  WiFi.begin(SSID);
+  Serial.printf("\n[SETUP] Connecting to '%s'... ", SSID);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
