@@ -1,5 +1,5 @@
 #include "ledblinker.h"
-#include "wsheartbeater.h"
+#include "wscommunicator.h"
 
 //
 // Global state
