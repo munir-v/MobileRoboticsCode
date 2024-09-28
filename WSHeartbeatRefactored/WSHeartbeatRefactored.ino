@@ -1,24 +1,35 @@
 #include "ledblinker.h"
 #include "wsheartbeater.h"
 
+//
+// Global state
+//
+
 // Network configuration
 const char* SSID = "Pomona";
-// const uint16_t PORT = 8181;
-// const unsigned long HEARTBEAT_INTERVAL = 1000;
+const uint16_t PORT = 8181;
+const unsigned long HEARTBEAT_INTERVAL = 1000;
+WSCommunicator wsCommunicator(SSID, PORT, HEARTBEAT_INTERVAL);
 
 // LED Blinking configuration
 const unsigned long BLINK_INTERVAL = 250;
-
-// WSHeartbeater wsHeartbeater(PORT, HEARTBEAT_INTERVAL);
 LedBlinker ledBlinker(BLINK_INTERVAL);
+
+//
+// Setup
+//
 
 void setup() {
   Serial.begin(115200);
-  wsHeartbeater.setup(SSID);
+  wsCommunicator.setup();
   ledBlinker.setup();
 }
 
+//
+// Loop
+//
+
 void loop() {
-  wsHeartbeater.loopStep();
-  ledBlinker.loopStep(wsHeartbeater.wsState == WS_ENABLED);
+  wsCommunicator.loopStep();
+  ledBlinker.loopStep(wsCommunicator.isEnabled());
 }
