@@ -4,7 +4,7 @@ import ..led
 import ..motors
 import ..pinout
 
-class LedBlinker implements Communicator:
+class GoToGoal implements Communicator:
 
   led := Led
   state := Communicator.DISABLED
@@ -42,81 +42,82 @@ class LedBlinker implements Communicator:
     motors.stop
 
 main:
-  led-blinker := LedBlinker
-  comm := WsCommunication led-blinker --heartbeat-ms=1000
+  go-to-goal := GoToGoal
+  comm := WsCommunication go-to-goal --heartbeat-ms=1000
 
-  //find right wheel duty factor
+  // FIND RIGHT WHEEL DUTY FACTOR
   // duty_factor/float := 1.0
-  // right-wheel := led-blinker.motors.right-encoder.get-rotation-rate 50
+  // right-wheel := go-to-goal.motors.right-encoder.get-rotation-rate 50
 
-  // led-blinker.motors.right-motor.set-pwm-duty-factor duty-factor
+  // go-to-goal.motors.right-motor.set-pwm-duty-factor duty-factor
   // sleep --ms=1000
   
   // while duty_factor > 0:
   //   sleep --ms=100
-  //   right-wheel-change := led-blinker.motors.right-encoder.get-rotation-rate 100
+  //   right-wheel-change := go-to-goal.motors.right-encoder.get-rotation-rate 100
   //   if (right-wheel-change - right-wheel).abs > 0.001:
   //     duty-factor -= 0.01
-  //     led-blinker.motors.right-motor.set-pwm-duty-factor duty-factor
+  //     go-to-goal.motors.right-motor.set-pwm-duty-factor duty-factor
   //     print duty-factor
   //   else:
   //     print "Breaking..."
   //     print duty-factor
-  //     led-blinker.motors.right-motor.set-pwm-duty-factor 0.0 // Stop the motor
+  //     go-to-goal.motors.right-motor.set-pwm-duty-factor 0.0 // Stop the motor
   //     break
       
-  //find left wheel duty factor
-  // left-wheel := led-blinker.motors.left-encoder.get-rotation-rate 50
 
-  // led-blinker.motors.left-motor.set-pwm-duty-factor duty-factor
+  // FIND LEFT WHEEL DUTY FACTOR
+  // left-wheel := go-to-goal.motors.left-encoder.get-rotation-rate 50
+
+  // go-to-goal.motors.left-motor.set-pwm-duty-factor duty-factor
   // sleep --ms=1000
   
   // while duty_factor > 0:
   //   sleep --ms=100
-  //   left-wheel-change := led-blinker.motors.left-encoder.get-rotation-rate 100
+  //   left-wheel-change := go-to-goal.motors.left-encoder.get-rotation-rate 100
   //   if (left-wheel-change - left-wheel).abs > 0.001:
   //     duty-factor -= 0.01
-  //     led-blinker.motors.left-motor.set-pwm-duty-factor duty-factor
+  //     go-to-goal.motors.left-motor.set-pwm-duty-factor duty-factor
   //     print duty-factor
   //   else:
   //     print "Breaking..."
   //     print duty-factor
-  //     led-blinker.motors.left-motor.set-pwm-duty-factor 0.0 // Stop the motor
+  //     go-to-goal.motors.left-motor.set-pwm-duty-factor 0.0 // Stop the motor
   //     break
 
 
-  // find max speed
+  // FIND MAX SPEED
   // right_duty_factor/float := 1.0
-  // led-blinker.motors.right-motor.set-pwm-duty-factor right_duty_factor
-  
-  // right-wheel := led-blinker.motors.right-encoder.get-rotation-rate 1000
-  
+  // go-to-goal.motors.right-motor.set-pwm-duty-factor right_duty_factor
+  // right-wheel := go-to-goal.motors.right-encoder.get-rotation-rate 1000
   
   // left_duty_factor/float := 7.0
-  // led-blinker.motors.left-motor.set-pwm-duty-factor left_duty_factor
+  // go-to-goal.motors.left-motor.set-pwm-duty-factor left_duty_factor
   
   // sleep --ms=1000
   
-  // right-wheel2 := led-blinker.motors.right-encoder.get-rotation-rate 1000
+  // right-wheel2 := go-to-goal.motors.right-encoder.get-rotation-rate 1000
   // print right-wheel2 * 2.5 * 3.1459
 
 
-  //  go to goal
-  duty_factor/float := 1.0
-  right-wheel := led-blinker.motors.right-encoder.get-rotation-rate 50
-
-  led-blinker.motors.right-motor.set-pwm-duty-factor duty-factor
-  sleep --ms=1000
+  // GO TO GOAL
   
-  while duty_factor > 0:
+  left_duty_factor/float := 0.5
+  right_duty_factor/float := 0.5
+
+  go-to-goal.motors.right-motor.set-pwm-duty-factor right-duty-factor
+  go-to-goal.motors.left-motor.set-pwm-duty-factor left-duty-factor
+  
+  distance/float := 0.0
+
+  while distance < 305.0: // (305cm = 10ft)
     sleep --ms=100
-    right-wheel-change := led-blinker.motors.right-encoder.get-rotation-rate 100
-    if (right-wheel-change - right-wheel).abs > 0.001:
-      duty-factor -= 0.01
-      led-blinker.motors.right-motor.set-pwm-duty-factor duty-factor
-      print duty-factor
-    else:
-      print "Breaking..."
-      print duty-factor
-      led-blinker.motors.right-motor.set-pwm-duty-factor 0.0 // Stop the motor
-      break
+    right-wheel-change := go-to-goal.motors.right-encoder.get-rotation-rate 100
+    left-wheel-change := go-to-goal.motors.left-encoder.get-rotation-rate 100
+
+    right_wheel_distance := right-wheel-change * 2.5 * 3.1459
+    left_wheel_distance := left-wheel-change * 2.5 * 3.1459
+
+    distance = (right_wheel_distance + left_wheel_distance) / 2.0
+
+    // update pwm using proportional control
