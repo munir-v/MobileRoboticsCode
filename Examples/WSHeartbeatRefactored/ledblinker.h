@@ -1,8 +1,4 @@
-
-typedef enum {
-  LED_ON = LOW,
-  LED_OFF = HIGH
-} LedState;
+typedef enum { LED_ON = LOW, LED_OFF = HIGH } LedState;
 
 class LedBlinker {
  public:
@@ -10,9 +6,7 @@ class LedBlinker {
   unsigned long blinkInterval;
   unsigned long blinkLastTime;
 
-  LedBlinker(unsigned long interval) : ledState(LED_OFF),
-                                       blinkInterval(interval),
-                                       blinkLastTime(0) {}
+  LedBlinker(unsigned long interval) : ledState(LED_OFF), blinkInterval(interval), blinkLastTime(0) {}
 
   void setup() {
     pinMode(LED_BUILTIN, OUTPUT);

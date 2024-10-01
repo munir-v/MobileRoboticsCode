@@ -1,15 +1,9 @@
 #include <WebSocketsServer.h>
 #include <WiFi.h>
 
-typedef enum {
-  WS_ENABLED,
-  WS_DISABLED
-} WsState;
+typedef enum { WS_ENABLED, WS_DISABLED } WsState;
 
-typedef enum {
-  LED_ON = LOW,
-  LED_OFF = HIGH
-} LedState;
+typedef enum { LED_ON = LOW, LED_OFF = HIGH } LedState;
 
 //    ▄▄▄  ▀▀█           █             ▀▀█            ▄▄▄▄    ▄             ▄
 //  ▄▀   ▀   █     ▄▄▄   █▄▄▄    ▄▄▄     █           █▀   ▀ ▄▄█▄▄   ▄▄▄   ▄▄█▄▄   ▄▄▄
