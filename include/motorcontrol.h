@@ -2,9 +2,12 @@
 #define MOTOR_CONTROL_H
 
 /*
-Using the DRV8835 motor driver from Pololu.
+We are using the DRV8835 breakout board from Pololu:
+https://www.pololu.com/product/2135
+
+For each motor
 - The PWM, analog output pin of each motor sets the speed (0 is stopped, 255 is full speed)
-- The DIR, digital output pin of each motor sets the direction (wire with HIGH as forward)
+- The DIR, digital output pin of each motor sets the direction
 */
 
 const int LEFT_MOTOR_DIR_PIN = 8;
