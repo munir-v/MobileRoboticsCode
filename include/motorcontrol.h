@@ -18,12 +18,7 @@ const int RIGHT_MOTOR_PWM_PIN = 7;
 typedef enum { DIRECTION_FORWARD = LOW, DIRECTION_BACKWARD = HIGH } MotorDirection;
 
 class MotorControl {
-  long leftDutyCycle;
-  long rightDutyCycle;
-
  public:
-  MotorControl() : leftDutyCycle(0), rightDutyCycle(0) {}
-
   void setup() {
     pinMode(LEFT_MOTOR_DIR_PIN, OUTPUT);
     pinMode(LEFT_MOTOR_PWM_PIN, OUTPUT);
@@ -54,11 +49,8 @@ class MotorControl {
     percent = constrain(percent, 0, 100);
     long dutyCycle = map(percent, 0, 100, 0, 255);
 
-    leftDutyCycle = dutyCycle;
-    rightDutyCycle = dutyCycle;
-
-    analogWrite(LEFT_MOTOR_PWM_PIN, leftDutyCycle);
-    analogWrite(RIGHT_MOTOR_PWM_PIN, rightDutyCycle);
+    analogWrite(LEFT_MOTOR_PWM_PIN, dutyCycle);
+    analogWrite(RIGHT_MOTOR_PWM_PIN, dutyCycle);
   }
 };
 
