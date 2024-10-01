@@ -99,3 +99,24 @@ main:
   
   // right-wheel2 := led-blinker.motors.right-encoder.get-rotation-rate 1000
   // print right-wheel2 * 2.5 * 3.1459
+
+
+  //  go to goal
+  duty_factor/float := 1.0
+  right-wheel := led-blinker.motors.right-encoder.get-rotation-rate 50
+
+  led-blinker.motors.right-motor.set-pwm-duty-factor duty-factor
+  sleep --ms=1000
+  
+  while duty_factor > 0:
+    sleep --ms=100
+    right-wheel-change := led-blinker.motors.right-encoder.get-rotation-rate 100
+    if (right-wheel-change - right-wheel).abs > 0.001:
+      duty-factor -= 0.01
+      led-blinker.motors.right-motor.set-pwm-duty-factor duty-factor
+      print duty-factor
+    else:
+      print "Breaking..."
+      print duty-factor
+      led-blinker.motors.right-motor.set-pwm-duty-factor 0.0 // Stop the motor
+      break
