@@ -12,8 +12,7 @@ const int LEFT_MOTOR_PWM_PIN = 9;
 const int RIGHT_MOTOR_DIR_PIN = 44;
 const int RIGHT_MOTOR_PWM_PIN = 7;
 
-// TODO: These are backwards
-typedef enum { DIRECTION_BACKWARD = LOW, DIRECTION_FORWARD = HIGH } MotorDirection;
+typedef enum { DIRECTION_FORWARD = LOW, DIRECTION_BACKWARD = HIGH } MotorDirection;
 
 class MotorControl {
   long leftDutyCycle;
