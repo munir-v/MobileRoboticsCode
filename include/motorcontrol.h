@@ -17,7 +17,7 @@ const int RIGHT_MOTOR_PWM_PIN = 7;
 
 typedef enum { DIRECTION_FORWARD = LOW, DIRECTION_BACKWARD = HIGH } MotorDirection;
 
-class MotorControl {
+class MotorDriver {
  public:
   void setup() {
     pinMode(LEFT_MOTOR_DIR_PIN, OUTPUT);

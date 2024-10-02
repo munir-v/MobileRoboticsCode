@@ -12,7 +12,7 @@ const unsigned long HEARTBEAT_INTERVAL = 1000;
 WSCommunicator wsCommunicator(SSID, PORT, HEARTBEAT_INTERVAL);
 
 // Motor configuration
-MotorControl motorControl;
+MotorDriver motorControl;
 
 //
 // Setup
