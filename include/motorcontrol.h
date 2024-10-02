@@ -21,10 +21,7 @@ class MotorControl {
  public:
   void setup() {
     pinMode(LEFT_MOTOR_DIR_PIN, OUTPUT);
-    pinMode(LEFT_MOTOR_PWM_PIN, OUTPUT);
     pinMode(RIGHT_MOTOR_DIR_PIN, OUTPUT);
-    pinMode(RIGHT_MOTOR_PWM_PIN, OUTPUT);
-
     setDirection(DIRECTION_FORWARD);
     stop();
   }
