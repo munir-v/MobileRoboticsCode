@@ -48,15 +48,16 @@ class WSCommunicator {
     //
 
     WiFi.begin(ssid);
+
     Serial.printf("\n[COMMUNICATOR::SETUP] Connecting to '%s'...", ssid);
+
     while (WiFi.status() != WL_CONNECTED) {
       delay(500);
       Serial.print(".");
     }
-    Serial.print("done\n");
 
-    IPAddress ip = WiFi.localIP();
-    Serial.printf("[COMMUNICATOR::SETUP] IP address: %d.%d.%d.%d\n", ip[0], ip[1], ip[2], ip[3]);
+    Serial.print("done\n");
+    Serial.printf("[COMMUNICATOR::SETUP] IP address: %s\n", WiFi.localIP().toString());
 
     //
     // Start WebSockets server
@@ -67,8 +68,10 @@ class WSCommunicator {
     };
 
     webSocket.begin();
+
     webSocket.onEvent(wrappedCB);
-    Serial.printf("[COMMUNICATOR::SETUP] WebSocket server at ws://%d.%d.%d.%d:%d\n", ip[0], ip[1], ip[2], ip[3], port);
+
+    Serial.printf("[COMMUNICATOR::SETUP] WebSocket server at ws://%s:%d\n", WiFi.localIP().toString(), port);
   }
 
   void loopStep() {
@@ -86,6 +89,9 @@ class WSCommunicator {
   }
 
   bool isEnabled() { return hbState == HEARTBEAT_ENABLED; }
+
+  const char* getIpAddress() { return WiFi.localIP().toString().c_str(); }
+  uint16_t getPort() { return port; }
 };
 
 //
