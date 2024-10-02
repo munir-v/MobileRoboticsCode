@@ -4,6 +4,8 @@
 #include <WebSocketsServer.h>
 #include <WiFi.h>
 
+#include "intervaltimer.h"
+
 //
 // State of WebSocket heartbeats
 //
@@ -25,8 +27,7 @@ class WSCommunicator {
   friend void wsEventCB(WSCommunicator& wsComm, uint8_t num, WStype_t type, uint8_t* payload, size_t length);
 
  private:
-  unsigned long heartbeatInterval;
-  unsigned long heartbeatLastTime;
+  IntervalTimer heartbeatTimer;
 
   const char* ssid;
   uint16_t port;
@@ -35,12 +36,7 @@ class WSCommunicator {
 
  public:
   WSCommunicator(const char* ssid, uint16_t port, unsigned long interval)
-      : heartbeatInterval(interval)
-      , heartbeatLastTime(0)
-      , ssid(ssid)
-      , port(port)
-      , webSocket(port)
-      , hbState(HEARTBEAT_DISABLED) {}
+      : heartbeatTimer(interval), ssid(ssid), port(port), webSocket(port), hbState(HEARTBEAT_DISABLED) {}
 
   void setup() {
     //
@@ -79,8 +75,7 @@ class WSCommunicator {
     webSocket.loop();
 
     // Update for handling heartbeat
-    unsigned long now = millis();
-    if (now - heartbeatLastTime > heartbeatInterval) {
+    if (heartbeatTimer) {
       if (hbState == HEARTBEAT_ENABLED) {
         hbState = HEARTBEAT_DISABLED;
         Serial.println("[COMMUNICATOR::HEARTBEAT] Heartbeat timeout");
@@ -116,7 +111,7 @@ void wsEventCB(WSCommunicator& wsComm, uint8_t num, WStype_t type, uint8_t* payl
     case WStype_TEXT:
       if (strncmp((char*)payload, "heartbeat", length) == 0) {
         wsComm.hbState = HEARTBEAT_ENABLED;
-        wsComm.heartbeatLastTime = millis();
+        wsComm.heartbeatTimer.setLastTime(millis());
       } else {
         Serial.printf("[COMMUNICATOR::%u] Received: %s\n", num, payload);
       }
