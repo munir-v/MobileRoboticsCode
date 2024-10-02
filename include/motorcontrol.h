@@ -40,17 +40,21 @@ class MotorControl {
     analogWrite(RIGHT_MOTOR_PWM_PIN, 0);
   }
 
-  void setDirection(MotorDirection direction) {
-    digitalWrite(LEFT_MOTOR_DIR_PIN, direction);
-    digitalWrite(RIGHT_MOTOR_DIR_PIN, direction);
+  void setDirection(MotorDirection direction) { setDirection(direction, direction); }
+  void setDirection(MotorDirection leftDirection, MotorDirection rightDirection) {
+    digitalWrite(LEFT_MOTOR_DIR_PIN, leftDirection);
+    digitalWrite(RIGHT_MOTOR_DIR_PIN, rightDirection);
   }
 
-  void setPWMPercent(long percent) {
-    percent = constrain(percent, 0, 100);
-    long dutyCycle = map(percent, 0, 100, 0, 255);
+  void setPWMPercent(long percent) { setPWMPercent(percent, percent); }
+  void setPWMPercent(long leftPercent, long rightPercent) {
+    leftPercent = constrain(leftPercent, 0, 100);
+    long leftDutyCycle = map(leftPercent, 0, 100, 0, 255);
+    analogWrite(LEFT_MOTOR_PWM_PIN, leftDutyCycle);
 
-    analogWrite(LEFT_MOTOR_PWM_PIN, dutyCycle);
-    analogWrite(RIGHT_MOTOR_PWM_PIN, dutyCycle);
+    rightPercent = constrain(rightPercent, 0, 100);
+    long rightDutyCycle = map(rightPercent, 0, 100, 0, 255);
+    analogWrite(RIGHT_MOTOR_PWM_PIN, rightDutyCycle);
   }
 };
 
