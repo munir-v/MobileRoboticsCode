@@ -1,4 +1,6 @@
 .DS_Store
 .vscode/
 .packages/
+_temp/
+Exercises/
 untracked-demos/
