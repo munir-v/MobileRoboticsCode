@@ -12,7 +12,7 @@ const unsigned long HEARTBEAT_INTERVAL = 1000;
 WSCommunicator wsCommunicator(SSID, PORT, HEARTBEAT_INTERVAL);
 
 // Motor configuration
-MotorDriver motorControl;
+DualMotorDriver motorDriver;
 
 //
 // Setup
@@ -21,9 +21,8 @@ MotorDriver motorControl;
 void setup() {
   Serial.begin(115200);
   wsCommunicator.setup();
-  motorControl.setup();
-  motorControl.setDirection(DIRECTION_FORWARD);
-  motorControl.setPWMPercent(50);
+  motorDriver.setDirection(DIRECTION_FORWARD);
+  motorDriver.setPwmPercent(50);
 }
 
 //
@@ -34,8 +33,8 @@ void loop() {
   wsCommunicator.loopStep();
 
   if (wsCommunicator.isEnabled()) {
-    motorControl.setPWMPercent(50);
+    motorDriver.setPwmPercent(50);
+  } else {
+    motorDriver.stop();
   }
-
-  motorControl.loopStep(wsCommunicator.isEnabled());
 }
