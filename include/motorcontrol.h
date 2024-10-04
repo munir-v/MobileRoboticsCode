@@ -14,6 +14,8 @@ For each motor
 // https://docs.espressif.com/projects/esp-idf/en/stable/esp32/migration-guides/release-5.x/5.0/peripherals.html#pulse-counter-driver
 #include <ESP32Encoder.h>
 
+#include "intervaltimer.h"
+
 const int LEFT_MOTOR_DIR_PIN = 8;
 const int LEFT_MOTOR_PWM_PIN = 9;
 const int RIGHT_MOTOR_DIR_PIN = 44;
@@ -27,7 +29,45 @@ const int RIGHT_ENCODER_DATA_PIN = 1;
 // 7 pulse counts per rotation, 2x for quadrature encoding, 50:1 gear ratio
 const long COUNTS_PER_ROTATION = 7 * 2 * 50;
 
+// Map a value from [fromLo, fromHi] to [toLo, toHi]
+float mapf(float value, float fromLo, float fromHi, float toLo, float toHi) {
+  return (value - fromLo) * (toHi - toLo) / (fromHi - fromLo) + toLo;
+}
+
 typedef enum { DIRECTION_FORWARD = LOW, DIRECTION_BACKWARD = HIGH } MotorDirection;
+
+//  ▄    ▄        ▀▀█                    ▄▄▄                  ▄                  ▀▀█
+//  ▀▄  ▄▀  ▄▄▄     █                  ▄▀   ▀  ▄▄▄   ▄ ▄▄   ▄▄█▄▄   ▄ ▄▄   ▄▄▄     █
+//   █  █  █▀  █    █                  █      █▀ ▀█  █▀  █    █     █▀  ▀ █▀ ▀█    █
+//   ▀▄▄▀  █▀▀▀▀    █                  █      █   █  █   █    █     █     █   █    █
+//    ██   ▀█▄▄▀    ▀▄▄    █            ▀▄▄▄▀ ▀█▄█▀  █   █    ▀▄▄   █     ▀█▄█▀    ▀▄▄
+
+class ProportionalAccumulatorController {
+ public:
+  float velocityGain;
+  float maxVelocityStep;
+  float maxVelocity;
+  float velocity;
+
+ public:
+  ProportionalAccumulatorController(float velocityGain, float maxVelocityStep, float maxVelocity)
+      : velocityGain(velocityGain), maxVelocityStep(maxVelocityStep), maxVelocity(maxVelocity), velocity(0.0) {}
+
+  float computeVelocity(float targetVelocity, float measuredVelocity) {
+    float error = targetVelocity - measuredVelocity;
+
+    // Constrain the control signal to limit the instantaneous change in velocity
+    float velocityStep = constrain(velocityGain * error, -maxVelocityStep, maxVelocityStep);
+
+    // Constrain velocity to its limits
+    velocity = constrain(velocity + velocityStep, -maxVelocity, maxVelocity);
+
+    return velocity;
+  }
+
+  void reset() { velocity = 0.0; }
+};
+
 //  ▄▄▄▄▄▄                          █
 //  █      ▄ ▄▄    ▄▄▄    ▄▄▄    ▄▄▄█   ▄▄▄    ▄ ▄▄
 //  █▄▄▄▄▄ █▀  █  █▀  ▀  █▀ ▀█  █▀ ▀█  █▀  █   █▀  ▀
@@ -65,6 +105,7 @@ class Encoder {
 
   void reset() { encoder.clearCount(); }
 };
+
 //  ▄    ▄          ▄                         ▄▄▄▄            ▀
 //  ██  ██  ▄▄▄   ▄▄█▄▄   ▄▄▄    ▄ ▄▄         █   ▀▄  ▄ ▄▄  ▄▄▄    ▄   ▄   ▄▄▄    ▄ ▄▄
 //  █ ██ █ █▀ ▀█    █    █▀ ▀█   █▀  ▀        █    █  █▀  ▀   █    ▀▄ ▄▀  █▀  █   █▀  ▀
@@ -126,6 +167,96 @@ class DualMotorDriver {
   }
 };
 
+//  ▄    ▄          ▄                           ▄▄▄                  ▄                  ▀▀█
+//  ██  ██  ▄▄▄   ▄▄█▄▄   ▄▄▄    ▄ ▄▄         ▄▀   ▀  ▄▄▄   ▄ ▄▄   ▄▄█▄▄   ▄ ▄▄   ▄▄▄     █
+//  █ ██ █ █▀ ▀█    █    █▀ ▀█   █▀  ▀        █      █▀ ▀█  █▀  █    █     █▀  ▀ █▀ ▀█    █
+//  █ ▀▀ █ █   █    █    █   █   █            █      █   █  █   █    █     █     █   █    █
+//  █    █ ▀█▄█▀    ▀▄▄  ▀█▄█▀   █             ▀▄▄▄▀ ▀█▄█▀  █   █    ▀▄▄   █     ▀█▄█▀    ▀▄▄
+
+class MotorControl {
+ private:
+  // Encoder configuration
+  Encoder leftEncoder;
+  Encoder rightEncoder;
+
+  // Control configuration
+  float wheelCircumference;
+  float leftTargetVelocity;
+  float rightTargetVelocity;
+  float maxVelocity;
+  long minPwmPercent;
+  ProportionalAccumulatorController leftController;
+  ProportionalAccumulatorController rightController;
+  DualMotorDriver motorDriver;
+
+  IntervalTimer updateTimer;
+
+ public:
+  MotorControl(
+      float wheelCircumference, float leftGain, float rightGain, float maxStep, float maxVelocity, long minPwmPercent,
+      unsigned long interval
+  )
+      : leftEncoder(LEFT_ENCODER_DATA_PIN, LEFT_ENCODER_CLOCK_PIN)
+      , rightEncoder(RIGHT_ENCODER_DATA_PIN, RIGHT_ENCODER_CLOCK_PIN)
+      , wheelCircumference(wheelCircumference)
+      , leftTargetVelocity(0.0)
+      , rightTargetVelocity(0.0)
+      , maxVelocity(maxVelocity)
+      , minPwmPercent(minPwmPercent)
+      , leftController(leftGain, maxStep, maxVelocity)
+      , rightController(rightGain, maxStep, maxVelocity)
+      , motorDriver()
+      , updateTimer(interval) {}
+
+  void setup() {
+    leftEncoder.setup();
+    rightEncoder.setup();
+    motorDriver.setup();
+  }
+
+  void loopStep(bool isEnabled) {
+    if (!isEnabled) {
+      reset();
+      return;
+    }
+
+    if (updateTimer) {
+      float leftMeasuredVelocity = leftEncoder.getRotationsPerSecond() * wheelCircumference;
+      float leftControl = leftController.computeVelocity(leftTargetVelocity, leftMeasuredVelocity);
+      long leftPwmPercent = mapf(abs(leftControl), 0, maxVelocity, minPwmPercent, 100);
+      MotorDirection leftDirection = leftControl > 0 ? DIRECTION_FORWARD : DIRECTION_BACKWARD;
+
+      float rightMeasuredVelocity = rightEncoder.getRotationsPerSecond() * wheelCircumference;
+      float rightControl = rightController.computeVelocity(rightTargetVelocity, rightMeasuredVelocity);
+      long rightPwmPercent = mapf(abs(rightControl), 0, maxVelocity, minPwmPercent, 100);
+      MotorDirection rightDirection = rightControl > 0 ? DIRECTION_FORWARD : DIRECTION_BACKWARD;
+
+      Serial.printf(
+          "%f, %f, %f, %ld, %f, %f, %ld\n", leftTargetVelocity, leftMeasuredVelocity, leftControl, leftPwmPercent,
+          rightMeasuredVelocity, rightControl, rightPwmPercent
+      );
+
+      motorDriver.setPwmPercent(leftPwmPercent, rightPwmPercent);
+      motorDriver.setDirection(leftDirection, rightDirection);
+    }
+  }
+
+  void reset() {
+    stop();
+    leftEncoder.reset();
+    rightEncoder.reset();
+    leftController.reset();
+    rightController.reset();
+  }
+
+  void stop() { motorDriver.stop(); }
+
+  void setTargetVelocity(float velocity) { setTargetVelocity(velocity, velocity); }
+  void setTargetVelocity(float leftVelocity, float rightVelocity) {
+    leftVelocity = constrain(leftVelocity, -maxVelocity, maxVelocity);
+    rightVelocity = constrain(rightVelocity, -maxVelocity, maxVelocity);
+    leftTargetVelocity = leftVelocity;
+    rightTargetVelocity = rightVelocity;
   }
 };
 
