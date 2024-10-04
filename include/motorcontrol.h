@@ -16,42 +16,67 @@ const int RIGHT_MOTOR_DIR_PIN = 44;
 const int RIGHT_MOTOR_PWM_PIN = 7;
 
 typedef enum { DIRECTION_FORWARD = LOW, DIRECTION_BACKWARD = HIGH } MotorDirection;
+//  ▄    ▄          ▄                         ▄▄▄▄            ▀
+//  ██  ██  ▄▄▄   ▄▄█▄▄   ▄▄▄    ▄ ▄▄         █   ▀▄  ▄ ▄▄  ▄▄▄    ▄   ▄   ▄▄▄    ▄ ▄▄
+//  █ ██ █ █▀ ▀█    █    █▀ ▀█   █▀  ▀        █    █  █▀  ▀   █    ▀▄ ▄▀  █▀  █   █▀  ▀
+//  █ ▀▀ █ █   █    █    █   █   █            █    █  █       █     █▄█   █▀▀▀▀   █
+//  █    █ ▀█▄█▀    ▀▄▄  ▀█▄█▀   █            █▄▄▄▀   █     ▄▄█▄▄    █    ▀█▄▄▀   █
 
 class MotorDriver {
+  int dirPin;
+  int pwmPin;
+
  public:
+  MotorDriver(int dirPin, int pwmPin) : dirPin(dirPin), pwmPin(pwmPin) {}
+
   void setup() {
-    pinMode(LEFT_MOTOR_DIR_PIN, OUTPUT);
-    pinMode(RIGHT_MOTOR_DIR_PIN, OUTPUT);
+    pinMode(dirPin, OUTPUT);
     setDirection(DIRECTION_FORWARD);
     stop();
   }
 
-  void loopStep(bool isEnabled) {
-    if (!isEnabled) {
-      stop();
-    }
+  void stop() { analogWrite(pwmPin, 0); }
+
+  void setDirection(MotorDirection direction) { digitalWrite(dirPin, direction); }
+
+  void setPwmPercent(long percent) {
+    percent = constrain(percent, 0, 100);
+    long dutyCycle = map(percent, 0, 100, 0, 255);
+    analogWrite(pwmPin, dutyCycle);
+  }
+};
+
+class DualMotorDriver {
+  MotorDriver leftDriver;
+  MotorDriver rightDriver;
+
+ public:
+  DualMotorDriver()
+      : leftDriver(LEFT_MOTOR_DIR_PIN, LEFT_MOTOR_PWM_PIN), rightDriver(RIGHT_MOTOR_DIR_PIN, RIGHT_MOTOR_PWM_PIN) {}
+
+  void setup() {
+    leftDriver.setup();
+    rightDriver.setup();
   }
 
   void stop() {
-    analogWrite(LEFT_MOTOR_PWM_PIN, 0);
-    analogWrite(RIGHT_MOTOR_PWM_PIN, 0);
+    leftDriver.stop();
+    rightDriver.stop();
   }
 
   void setDirection(MotorDirection direction) { setDirection(direction, direction); }
   void setDirection(MotorDirection leftDirection, MotorDirection rightDirection) {
-    digitalWrite(LEFT_MOTOR_DIR_PIN, leftDirection);
-    digitalWrite(RIGHT_MOTOR_DIR_PIN, rightDirection);
+    leftDriver.setDirection(leftDirection);
+    rightDriver.setDirection(rightDirection);
   }
 
-  void setPWMPercent(long percent) { setPWMPercent(percent, percent); }
-  void setPWMPercent(long leftPercent, long rightPercent) {
-    leftPercent = constrain(leftPercent, 0, 100);
-    long leftDutyCycle = map(leftPercent, 0, 100, 0, 255);
-    analogWrite(LEFT_MOTOR_PWM_PIN, leftDutyCycle);
+  void setPwmPercent(long percent) { setPwmPercent(percent, percent); }
+  void setPwmPercent(long leftPercent, long rightPercent) {
+    leftDriver.setPwmPercent(leftPercent);
+    rightDriver.setPwmPercent(rightPercent);
+  }
+};
 
-    rightPercent = constrain(rightPercent, 0, 100);
-    long rightDutyCycle = map(rightPercent, 0, 100, 0, 255);
-    analogWrite(RIGHT_MOTOR_PWM_PIN, rightDutyCycle);
   }
 };
 
