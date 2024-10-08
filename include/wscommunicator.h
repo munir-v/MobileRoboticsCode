@@ -112,6 +112,7 @@ void wsEventCB(WSCommunicator& wsComm, uint8_t num, WStype_t type, uint8_t* payl
       if (strncmp((char*)payload, "heartbeat", length) == 0) {
         wsComm.hbState = HEARTBEAT_ENABLED;
         wsComm.heartbeatTimer.setLastTime(millis());
+        // Serial.printf("[COMMUNICATOR::%u] Heartbeat\n", num);
       } else {
         Serial.printf("[COMMUNICATOR::%u] Received: %s\n", num, payload);
       }
