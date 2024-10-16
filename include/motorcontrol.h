@@ -179,6 +179,10 @@ class MotorControl {
   Encoder leftEncoder;
   Encoder rightEncoder;
 
+  // Speed at the left and right wheels
+  float leftMeasuredVelocity;
+  float rightMeasuredVelocity;
+
   // Control configuration
   float wheelCircumference;
   float leftTargetVelocity;
@@ -221,12 +225,12 @@ class MotorControl {
     }
 
     if (updateTimer) {
-      float leftMeasuredVelocity = leftEncoder.getRotationsPerSecond() * wheelCircumference;
+      leftMeasuredVelocity = leftEncoder.getRotationsPerSecond() * wheelCircumference;
       float leftControl = leftController.computeVelocity(leftTargetVelocity, leftMeasuredVelocity);
       long leftPwmPercent = mapf(abs(leftControl), 0, maxVelocity, minPwmPercent, 100);
       MotorDirection leftDirection = leftControl > 0 ? DIRECTION_FORWARD : DIRECTION_BACKWARD;
 
-      float rightMeasuredVelocity = rightEncoder.getRotationsPerSecond() * wheelCircumference;
+      rightMeasuredVelocity = rightEncoder.getRotationsPerSecond() * wheelCircumference;
       float rightControl = rightController.computeVelocity(rightTargetVelocity, rightMeasuredVelocity);
       long rightPwmPercent = mapf(abs(rightControl), 0, maxVelocity, minPwmPercent, 100);
       MotorDirection rightDirection = rightControl > 0 ? DIRECTION_FORWARD : DIRECTION_BACKWARD;
@@ -258,6 +262,9 @@ class MotorControl {
     leftTargetVelocity = leftVelocity;
     rightTargetVelocity = rightVelocity;
   }
+
+  float getLeftVelocity(float velocity) { return leftMeasuredVelocity; }
+  float getRightVelocity(float velocity) { return rightMeasuredVelocity; }
 };
 
 #endif
