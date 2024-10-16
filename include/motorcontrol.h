@@ -64,8 +64,6 @@ class ProportionalAccumulatorController {
 
     return velocity;
   }
-
-  // void reset() { velocity = 0.0; }
 };
 
 //  ▄▄▄▄▄▄                          █
