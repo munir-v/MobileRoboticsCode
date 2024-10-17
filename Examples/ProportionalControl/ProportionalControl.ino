@@ -9,10 +9,13 @@
 const char* SSID = "Pomona";
 const uint16_t PORT = 8181;
 const unsigned long HEARTBEAT_INTERVAL = 1000;
-WSCommunicator wsCommunicator(SSID, PORT, HEARTBEAT_INTERVAL);
+WsCommunicator wsCommunicator(SSID, PORT, HEARTBEAT_INTERVAL);
+
+// Robot characteristics
+const float WHEEL_DIAMETER = 0.07;
+const float WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * PI;
 
 // Motor configuration
-const float WHEEL_CIRCUMFERENCE = 0.07;
 const float LEFT_GAIN = 0.5;
 const float RIGHT_GAIN = 0.1;
 const float MAX_VELOCITY_STEP = 0.5;
