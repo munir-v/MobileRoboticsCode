@@ -5,6 +5,7 @@
 
 class DifferentialDriveRobot {
     // Private variables to store global state
+private:
     double x_g;   // Global x-coordinate
     double y_g;   // Global y-coordinate
     double θ_g;   // Global orientation (in radians)
@@ -28,15 +29,15 @@ class DifferentialDriveRobot {
     }
 
     // Forward kinematics to update position and orientation
-    void forward_kinematics(double v_L, double v_R, double t) {
+    void forward_kinematics(double v_L, double v_R, double delta_t) {
         double v = (v_L + v_R) / 2.0;  // Linear velocity
         double ω = (v_R - v_L) / L;    // Angular velocity
 
-        double Δθ = ω * t;             // Change in orientation
+        double Δθ = ω * delta_t;             // Change in orientation
         θ_g = normalize_angle(θ_g + Δθ);
 
-        double Δx = v * cos(θ_g) * t;  // Change in x-coordinate
-        double Δy = v * sin(θ_g) * t;  // Change in y-coordinate
+        double Δx = v * cos(θ_g) * delta_t;  // Change in x-coordinate
+        double Δy = v * sin(θ_g) * delta_t;  // Change in y-coordinate
 
         x_g += Δx;  // Update global x-coordinate
         y_g += Δy;  // Update global y-coordinate
@@ -50,7 +51,8 @@ class DifferentialDriveRobot {
     }
 
     // Loop step function (placeholder for future use)
-    void loopStep() {}
+    void loopStep() {
+    }
 };
 
 #endif  // DIFFERENTIALDRIVEROBOT_H
