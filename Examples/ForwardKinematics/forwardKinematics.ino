@@ -12,7 +12,7 @@ const uint16_t PORT = 8181;
 const unsigned long HEARTBEAT_INTERVAL = 1000;
 
 // Instances of classes
-WSCommunicator wsCommunicator(SSID, PORT, HEARTBEAT_INTERVAL);
+WsCommunicator WsCommunicator(SSID, PORT, HEARTBEAT_INTERVAL);
 Display display;
 MotorControl motorController;
 DifferentialDriveRobot diffDriveRobot(0.2);  // Wheelbase of 0.2 meters
