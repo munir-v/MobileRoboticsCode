@@ -1,6 +1,8 @@
 #include "../../include/motorcontrol.h"
 #include "../../include/wscommunicator.h"
 #include "forwardKinematics.h"
+#include "../../include/display.h"
+
 
 //
 // Global State
@@ -14,7 +16,7 @@ const unsigned long HEARTBEAT_INTERVAL = 1000;
 // Instances of classes
 WsCommunicator WsCommunicator(SSID, PORT, HEARTBEAT_INTERVAL);
 Display display;
-MotorControl motorController;
+MotorControl motorController(0.1, 0.1, 0.1, 0.1, 0.1, 0, 100);
 DifferentialDriveRobot diffDriveRobot(0.2);  // Wheelbase of 0.2 meters
 unsigned long totalTime = 0;
 
@@ -26,7 +28,7 @@ void setup() {
   Serial.begin(115200);
 
   // Initialize the network communicator
-  wsCommunicator.setup();
+  WsCommunicator.setup();
 
   // Initialize motor control
   motorController.setup();
@@ -51,14 +53,12 @@ void setup() {
 //
 void loop() {
   // Process WebSocket communication
-  wsCommunicator.loopStep();
+  WsCommunicator.loopStep();
 
   // Check if the WebSocket communicator is enabled
-  if (wsCommunicator.isEnabled()) {
-    // Set motor PWM to 50%
-    motorController.motorDriver.setPwmPercent(50);
-    motorController.motorDriver.setLeftSpeed(20);
-    motorController.motorDriver.setRightSpeed(25);
+  if (WsCommunicator.isEnabled()) {
+    // Set left and right wheel velocities
+    motorController.setTargetVelocity(1,2);
 
     // Get wheel velocities from the motor encoder
     double v_L = motorController.getLeftVelocity();  // Left wheel velocity
@@ -70,11 +70,11 @@ void loop() {
     totalTime -= t;
   } else {
     // Stop the motor if WebSocket is disabled
-    motorController.motorDriver.stop();
+    motorController.stop();
   }
 
   if (totalTime <= 0) {
     // Stop the motor
-    motorController.motorDriver.stop();
+    motorController.stop();
   }
 }
