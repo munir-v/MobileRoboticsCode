@@ -106,7 +106,7 @@ class Encoder {
     encoder.clearCount();
 
     float rotation = (float)pulseCount / (float)COUNTS_PER_ROTATION;
-    float rotationsPerSecond = rotation / (float)elapsedTime;
+    float rotationsPerSecond = rotation / (float)(elapsedTime + 0.0001);
 
     return rotationsPerSecond;
   }
@@ -209,6 +209,8 @@ class MotorControl {
   )
       : leftEncoder(LEFT_ENCODER_DATA_PIN, LEFT_ENCODER_CLOCK_PIN)
       , rightEncoder(RIGHT_ENCODER_DATA_PIN, RIGHT_ENCODER_CLOCK_PIN)
+      , leftMeasuredVelocity(0.0)
+      , rightMeasuredVelocity(0.0)
       , wheelCircumference(wheelCircumference)
       , leftTargetVelocity(0.0)
       , rightTargetVelocity(0.0)
