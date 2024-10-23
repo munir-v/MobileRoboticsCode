@@ -87,6 +87,12 @@ class WsCommunicator {
 
   String getIpAddress() { return WiFi.localIP().toString(); }
   uint16_t getPort() { return port; }
+
+  void sendText(const char message[], uint8_t length) {
+    for (uint8_t i = 0; i < webSocket.connectedClients(); i++) {
+      webSocket.sendTXT(i, message, length);
+    }
+  }
 };
 
 //
