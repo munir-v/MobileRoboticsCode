@@ -42,7 +42,7 @@ void setup() {
   diffDriveRobot.setup();  // Reset x, y, and theta to zero
 
 
-  totalTime = 10;
+  totalTime = 0;
 }
 
 //
@@ -62,15 +62,15 @@ void loop() {
     double v_R = motorController.getRightVelocity(); // Right wheel velocity
 
     // Update robot's kinematics using wheel velocities and time step
-    diffDriveRobot.forward_kinematics(v_L, v_R, delta_t);
-    totalTime -= t;
+    while (totalTime <= 10 ) {
+      diffDriveRobot.forward_kinematics(v_L, v_R, delta_t);
+      v_L = motorController.getLeftVelocity();  // Left wheel velocity
+      v_R = motorController.getRightVelocity(); // Right wheel velocity
+      totalTime += delta_t;
+    }
   } else {
     // Stop the motor if WebSocket is disabled
     motorController.stop();
   }
-
-  if (totalTime <= 0) {
-    // Stop the motor
-    motorController.stop();
-  }
+  motorController.stop();
 }
