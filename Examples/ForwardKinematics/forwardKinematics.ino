@@ -1,6 +1,6 @@
 #include "../../include/motorcontrol.h"
 #include "../../include/wscommunicator.h"
-#include "forwardKinematics.h"
+#include "kinematics.h"
 #include "../../include/display.h"
 
 // Network configuration
