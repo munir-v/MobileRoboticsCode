@@ -9,12 +9,12 @@ const uint16_t PORT = 8181;
 const unsigned long HEARTBEAT_INTERVAL = 1000;
 
 // Instances of classes
-WsCommunicator WsCommunicator(SSID, PORT, HEARTBEAT_INTERVAL);
+WsCommunicator wsCommunicator(SSID, PORT, HEARTBEAT_INTERVAL);
 Display display;
 MotorControl motorController(0.2, .5, .5, .5, .5, 0.34, 100);
 DifferentialDriveRobot diffDriveRobot(0.2);  // Wheelbase of 0.2 meters
 unsigned long totalTime = 0;
-unsigned long t = 0;
+unsigned long delta_t = 0.1;
 
 //
 // Setup function
@@ -24,7 +24,7 @@ void setup() {
   Serial.begin(115200);
 
   // Initialize the network communicator
-  WsCommunicator.setup();
+  wsCommunicator.setup();
 
   // Initialize motor control
   motorController.setup();
@@ -50,10 +50,14 @@ void setup() {
 //
 void loop() {
   // Process WebSocket communication
-  WsCommunicator.loopStep();
+  wsCommunicator.loopStep();
 
   // Check if the WebSocket communicator is enabled
-  if (WsCommunicator.isEnabled()) {
+  if (wsCommunicator.isEnabled()) {
+    Serial.print("WebSocket is enabled\n");
+    display.drawString(1, 0, "TEST");
+
+
     // Set left and right wheel velocities
     motorController.setTargetVelocity(1,2);
 
@@ -63,6 +67,7 @@ void loop() {
 
     // Update robot's kinematics using wheel velocities and time step
     while (totalTime <= 10 ) {
+      motorController.loopStep(true);
       diffDriveRobot.forward_kinematics(v_L, v_R, delta_t);
       v_L = motorController.getLeftVelocity();  // Left wheel velocity
       v_R = motorController.getRightVelocity(); // Right wheel velocity
