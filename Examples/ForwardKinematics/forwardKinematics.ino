@@ -11,9 +11,7 @@ const unsigned long HEARTBEAT_INTERVAL = 1000;
 // Instances of classes
 WsCommunicator WsCommunicator(SSID, PORT, HEARTBEAT_INTERVAL);
 Display display;
-
-// TODO: FIX maxStep, maxVelocity
-MotorControl motorController(0.2, 2, 2, 2, 0.1, 0, 100);
+MotorControl motorController(0.2, .5, .5, .5, .5, 0.34, 100);
 DifferentialDriveRobot diffDriveRobot(0.2);  // Wheelbase of 0.2 meters
 unsigned long totalTime = 0;
 unsigned long t = 0;
