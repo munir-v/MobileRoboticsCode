@@ -14,9 +14,9 @@ MotorControl motorController(0.2, .5, .5, .5, .5, 0.34, 250);
 Display display;
 DifferentialDriveRobot diffDriveRobot(0.2); // Wheelbase of 0.2 meters
 
-unsigned long totalTime = 0;
-unsigned long delta_t = 0.25;
-unsigned long lastMotorUpdateTime = 0;
+double totalTime = 0;
+double delta_t = 0.25;
+double lastMotorUpdateTime = 0;
 
 //
 // Setup function
@@ -72,15 +72,26 @@ void loop()
     // Get wheel velocities from the motor encoder
     double v_L = motorController.getLeftVelocity();  // Left wheel velocity
     double v_R = motorController.getRightVelocity(); // Right wheel velocity
-    
+
     unsigned long now = millis();
 
     // Update robot's kinematics using wheel velocities and time step
-    if (now - lastMotorUpdateTime > delta_t)
+    if (now - lastMotorUpdateTime > (delta_t * 1000)) // Convert seconds to milliseconds
     {
       lastMotorUpdateTime = now;
       diffDriveRobot.forward_kinematics(v_L, v_R, delta_t);
       totalTime += delta_t;
+
+      // print x, y, and theta
+      double x = diffDriveRobot.get_x();
+      double y = diffDriveRobot.get_y();
+      double theta = diffDriveRobot.get_theta();
+      Serial.print("x: ");
+      Serial.print(x);
+      Serial.print(", y: ");
+      Serial.print(y);
+      Serial.print(", theta: ");
+      Serial.println(theta);
     }
   }
   else
@@ -88,5 +99,4 @@ void loop()
     // Stop the motor if WebSocket is disabled
     motorController.stop();
   }
-  motorController.stop();
 }
