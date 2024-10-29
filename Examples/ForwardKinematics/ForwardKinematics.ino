@@ -10,12 +10,12 @@ const unsigned long HEARTBEAT_INTERVAL = 1000;
 
 // Instances of classes
 WsCommunicator wsCommunicator(SSID, PORT, HEARTBEAT_INTERVAL);
+MotorControl motorController(0.2, .5, .5, .5, .5, 0.34, 250);
 Display display;
-MotorControl motorController(0.2, .5, .5, .5, .5, 0.34, 100);
 DifferentialDriveRobot diffDriveRobot(0.2); // Wheelbase of 0.2 meters
 
 unsigned long totalTime = 0;
-unsigned long delta_t = 0.1;
+unsigned long delta_t = 0.25;
 unsigned long lastMotorUpdateTime = 0;
 
 //
@@ -67,7 +67,7 @@ void loop()
     }
 
     // Set left and right wheel velocities
-    motorController.setTargetVelocity(1, 2);
+    motorController.setTargetVelocity(0.2, 0.25);
 
     // Get wheel velocities from the motor encoder
     double v_L = motorController.getLeftVelocity();  // Left wheel velocity
