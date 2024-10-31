@@ -1,7 +1,7 @@
 #include "../../include/motorcontrol.h"
 #include "../../include/wscommunicator.h"
 #include "positioncontrol.h"
-#include "kinematics.h"
+#include "../ForwardKinematics/kinematics.h"
 #include "../../include/display.h"
 
 // Network configuration
@@ -15,21 +15,17 @@ const double TRACK_WIDTH = 0;
 const double MAX_LINEAR_VELOCITY = 0;
 const double MAX_ANGULAR_VELOCITY = 0;
 const double K_POSITION = 0;
-const double K_ORIENTATION =0;
+const double K_ORIENTATION = 0;
+
+// TODO THIS MIGHT NEED TO BE CHANGED
+double v_L, v_R = 0;
 
 // Instances of classes
 WsCommunicator wsCommunicator(SSID, PORT, HEARTBEAT_INTERVAL);
 MotorControl motorController(0.2, .5, .5, .5, .5, 0.34, 250);
 Display display;
-PositionControl PositionControl(
-GOALX
-,GOAL_Y
-,GOAL_THRESHOLD
-,TRACK_WIDTH
-,MAX_LINEAR_VELOCITY
-,MAX_ANGULAR_VELOCITY
-,K_POSITION
-,K_ORIENTATION)
+PositionControl positionControl(
+    GOALX, GOALY, GOAL_THRESHOLD, TRACK_WIDTH, MAX_LINEAR_VELOCITY, MAX_ANGULAR_VELOCITY, K_POSITION, K_ORIENTATION);
 DifferentialDriveRobot diffDriveRobot(0.2); // Wheelbase of 0.2 meters
 
 double totalTime = 0;
@@ -43,28 +39,28 @@ Pose goal_pose;
 //
 void setup()
 {
-  // Start serial communication
-  Serial.begin(115200);
+    // Start serial communication
+    Serial.begin(115200);
 
-  // Initialize the network communicator
-  wsCommunicator.setup();
+    // Initialize the network communicator
+    wsCommunicator.setup();
 
-  // Initialize motor control
-  motorController.setup();
+    // Initialize motor control
+    motorController.setup();
 
-  // Set initial motor target velocity
-  motorController.setTargetVelocity(0.1); // 0.1 m/s
+    // Set initial motor target velocity
+    motorController.setTargetVelocity(0.1); // 0.1 m/s
 
-  // Initialize display
-  display.setup();
+    // Initialize display
+    display.setup();
 
-  // Display IP address on the OLED screen
-  display.drawString(0, 0, "IP: " + WiFi.localIP().toString());
+    // Display IP address on the OLED screen
+    display.drawString(0, 0, "IP: " + WiFi.localIP().toString());
 
-  // Initialize robot's position and orientation
-  diffDriveRobot.setup(); // Reset x, y, and theta to zero
+    // Initialize robot's position and orientation
+    diffDriveRobot.setup(); // Reset x, y, and theta to zero
 
-  totalTime = 0;
+    totalTime = 0;
 }
 
 //
@@ -72,44 +68,39 @@ void setup()
 //
 void loop()
 {
-  // Process WebSocket communication
-  wsCommunicator.loopStep();
-  motorController.loopStep(true);
+    // Process WebSocket communication
+    wsCommunicator.loopStep();
+    motorController.loopStep(true);
 
-  // Check if the WebSocket communicator is enabled
-  if (wsCommunicator.isEnabled())
-  {
-    // Check if the total time is greater than 10 seconds
-    if (totalTime > 10)
+    // Check if the WebSocket communicator is enabled
+    if (wsCommunicator.isEnabled())
     {
-      motorController.stop();
-      return;
+        // Check if the total time is greater than 10 seconds
+        if (totalTime > 10)
+        {
+            motorController.stop();
+            return;
+        }
+        // Set left and right wheel velocities
+        motorController.setTargetVelocity(v_L, v_R);
+
+        unsigned long now = millis();
+
+        // Update robot's kinematics using wheel velocities and time step
+        if (now - lastMotorUpdateTime > (delta_t * 1000)) // Convert seconds to milliseconds
+        {
+            lastMotorUpdateTime = now;
+            diffDriveRobot.forward_kinematics(v_L, v_R, delta_t);
+            curr_pose.x = diffDriveRobot.get_x();
+            curr_pose.y = diffDriveRobot.get_y();
+            curr_pose.theta = diffDriveRobot.get_theta();
+            v_L, v_R = positionControl.position_control(curr_pose, goal_pose);
+            totalTime += delta_t;
+        }
     }
-
-    // Set left and right wheel velocities
-    motorController.setTargetVelocity(v_L, v_R);
-
-    // Get wheel velocities from the motor encoder
-    double v_L = motorController.getLeftVelocity();  // Left wheel velocity
-    double v_R = motorController.getRightVelocity(); // Right wheel velocity
-
-    unsigned long now = millis();
-
-    // Update robot's kinematics using wheel velocities and time step
-    if (now - lastMotorUpdateTime > (delta_t * 1000)) // Convert seconds to milliseconds
+    else
     {
-      lastMotorUpdateTime = now;
-      diffDriveRobot.forward_kinematics(v_L, v_R, delta_t);
-      curr_pose.x = diffDriveRobot.get_x()
-      curr_pose.y = diffDriveRobot.get_y()
-      curr_pose.theta = diffDriveRobot.get_theta()
-      v_L, v_R = PositionControl.position_control(curr_pose, goal_pose)
-      totalTime += delta_t;
+        // Stop the motor if WebSocket is disabled
+        motorController.stop();
     }
-  }
-  else
-  {
-    // Stop the motor if WebSocket is disabled
-    motorController.stop();
-  }
 }
