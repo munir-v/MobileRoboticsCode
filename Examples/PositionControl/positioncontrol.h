@@ -34,8 +34,8 @@ public:
         theta_dot = K_ORIENTATION * theta_error;
         theta_dot = min(theta_dot, MAX_ANGULAR_VELOCITY);
 
-        v_left = v - θdot * TRACK_WIDTH / 2;
-        v_right = v + θdot * TRACK_WIDTH / 2;
+        v_left = v - theta_dot * TRACK_WIDTH / 2;
+        v_right = v + theta_dot * TRACK_WIDTH / 2;
 
         return v_left, v_right;
     }
