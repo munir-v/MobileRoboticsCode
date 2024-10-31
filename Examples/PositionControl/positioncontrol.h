@@ -57,8 +57,8 @@ public:
         double theta_dot = K_orientation * theta_error;
         theta_dot = std::min(theta_dot, maxAngularVelocity);
 
-        v_left = v - theta_dot * TRACK_WIDTH / 2;
-        v_right = v + theta_dot * TRACK_WIDTH / 2;
+        v_left = v - theta_dot * trackWidth / 2;
+        v_right = v + theta_dot * trackWidth / 2;
 
         return v_left, v_right;
     }
