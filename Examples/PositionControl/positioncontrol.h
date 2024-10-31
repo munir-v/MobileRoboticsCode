@@ -2,6 +2,8 @@
 #define POSITIONCONTROL_H
 
 #include "../../include/forwardkinematics.h"
+#include <math.h>
+#include <algorithm>
 
 class PositionControl
 {
@@ -11,7 +13,28 @@ private:
 
 public:
     // Constructor initializes robot state
-    PositionControl() {}
+    double goalX;
+    double goalY;
+    double goalThreshold;
+    double trackWidth;
+
+    double maxLinearVelocity;
+    double maxAngularVelocity;
+
+    double K_position;
+    double K_orientation;
+
+    PositionControl( double goalX, double goalY, double goalThreshold, double trackWidth,
+     double maxLinearVelocity, double maxAngularVelocity, double K_position, double K_orientation) 
+     : goalX(goalX)
+     , goalY(goalY)
+     , goalThreshold(goalThreshold)
+     , trackWidth(trackWidth)
+     , maxLinearVelocity(maxLinearVelocity)
+     , maxAngularVelocity(maxAngularVelocity)
+     , K_position(K_position)
+     , K_orientation(K_orientation)
+     {}
 
 
 
@@ -26,16 +49,16 @@ public:
             return v_left, v_right;
         }
 
-        double v = K_POSITION * d;
-        v = min(v, MAX_LINEAR_VELOCITY);
+        double v = K_position * d;
+        v = std::min(v, maxLinearVelocity);
 
-        angle_to_goal = angle(pose, GOAL);
-        theta_error = angle_to_goal - pose.theta;
-        theta_dot = K_ORIENTATION * theta_error;
-        theta_dot = min(theta_dot, MAX_ANGULAR_VELOCITY);
+        double angle_to_goal = angle(pose, GOAL);
+        double theta_error = angle_to_goal - pose.theta;
+        double theta_dot = K_orientation * theta_error;
+        theta_dot = std::min(theta_dot, maxAngularVelocity);
 
-        v_left = v - θdot * TRACK_WIDTH / 2;
-        v_right = v + θdot * TRACK_WIDTH / 2;
+        v_left = v - theta_dot * trackWidth / 2;
+        v_right = v + theta_dot * trackWidth / 2;
 
         return v_left, v_right;
     }
@@ -43,6 +66,11 @@ public:
     double distance(Pose pose, Pose GOAL)
     {
         return sqrt(pow(GOAL.x - pose.x, 2) + pow(GOAL.y - pose.y, 2));
+    }
+
+    double angle(Pose pose, Pose GOAL)
+    {
+       return atan2(GOAL.y - pose.y, GOAL.x - pose.x);
     }
 
     void setup()
