@@ -4,8 +4,7 @@ def get_distance(pose1, pose2):
     return math.sqrt(((pose2.x - pose1.x)**2) +((pose2.y - pose1.y)**2))
 
 def get_angle(pose1, pose2):
-    # Fill this in
-    return 0
+    return math.atan2(pose2.y - pose1.y, pose2.x - pose1.x)
 
 def update_wheel_velocities(curr_pose, goal_pose, k_position, k_orientation, max_linear_velocity, max_angular_velocity, track_width):
     d = get_distance(goal_pose, curr_pose)
