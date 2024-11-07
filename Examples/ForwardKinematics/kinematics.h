@@ -3,6 +3,18 @@
 
 #include <cmath> // For sin, cos, and fmod
 
+// Pose class
+class Pose
+{
+public:
+    double x;
+    double y;
+    double theta;
+
+    Pose(double x, double y, double theta)
+        : x(x), y(y), theta(theta) {}
+};
+
 class DifferentialDriveRobot
 {
     // Private variables to store global state
@@ -72,6 +84,18 @@ public:
     double get_theta()
     {
         return theta_g;
+    }
+
+    void reset()
+    {
+        x_g = 0.0;
+        y_g = 0.0;
+        theta_g = 0.0;
+    }
+
+    Pose getPose()
+    {
+        return Pose(x_g, y_g, theta_g);
     }
 
     // Loop step function (placeholder for future use)
