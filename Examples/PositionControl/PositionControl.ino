@@ -12,6 +12,9 @@ const float WHEEL_BASE = 0.2;
 // Network configuration
 const char *SSID = "Pomona";
 const uint16_t PORT = 8181;
+char message[100];
+
+IntervalTimer messageTimer(500);
 
 // position control configs
 const unsigned long HEARTBEAT_INTERVAL = 1000;
@@ -43,11 +46,8 @@ DifferentialDriveRobot diffDriveRobot(WHEEL_BASE); // Wheelbase of 0.2 meters
 
 double totalTime = 0;
 double delta_t = 0.25;
-double lastMotorUpdateTime = 0;
 Pose curr_pose;
 Pose goal_pose;
-
-bool messageTimer = true;
 
 //
 // Setup function
@@ -111,14 +111,12 @@ void loop()
    }
 
    // Display the current pose on the OLED screen every 100ms
-   unsigned long now = millis();
-   if (now - lastMotorUpdateTime > 100)
+   if (messageTimer)
    {
-      lastMotorUpdateTime = now;
+      Pose pose = diffDriveRobot.getPose();
       display.drawString(2, 0, "x: " + String(pose.x));
       display.drawString(3, 0, "y: " + String(pose.y));
       display.drawString(4, 0, "theta: " + String(pose.theta));
-      char message[100];
       snprintf(message, sizeof(message), "x=%f y =%f theta=%f vl=%f vr=%f", pose.x, pose.y, pose.theta, leftVelocity, rightVelocity);
       wsCommunicator.sendText(message, strlen(message));
    }

@@ -12,7 +12,7 @@ const unsigned long HEARTBEAT_INTERVAL = 1000;
 WsCommunicator wsCommunicator(SSID, PORT, HEARTBEAT_INTERVAL);
 
 // Robot characteristics
-const float WHEEL_DIAMETER = 0.07;
+const float WHEEL_DIAMETER = 0.086;
 const float WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * PI;
 
 // Motor configuration

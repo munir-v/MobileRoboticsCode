@@ -3,21 +3,28 @@
 
 #include <cmath> // For sin, cos, and fmod
 
-// Pose class
-class Pose
+// Pose struct
+struct Pose
 {
-public:
     double x;
     double y;
     double theta;
 
     Pose(double x, double y, double theta)
         : x(x), y(y), theta(theta) {}
+    void set(double x, double y, double theta)
+    {
+        x = x;
+        y = y;
+        theta = theta;
+    }
 };
 
 class DifferentialDriveRobot
 {
     // Private variables to store global state
+    Pose pose;
+
 private:
     double x_g;     // Global x-coordinate
     double y_g;     // Global y-coordinate
@@ -95,7 +102,7 @@ public:
 
     Pose getPose()
     {
-        return Pose(x_g, y_g, theta_g);
+        return pose;
     }
 
     // Loop step function (placeholder for future use)
