@@ -47,6 +47,8 @@ double lastMotorUpdateTime = 0;
 Pose curr_pose;
 Pose goal_pose;
 
+bool messageTimer = true;
+
 //
 // Setup function
 //
@@ -108,8 +110,15 @@ void loop()
       motorController.setTargetVelocity(leftVelocity, rightVelocity);
    }
 
-   if (messageTimer)
+   // Display the current pose on the OLED screen every 100ms
+   unsigned long now = millis();
+   if (now - lastMotorUpdateTime > 100)
    {
+      lastMotorUpdateTime = now;
+      display.drawString(2, 0, "x: " + String(pose.x));
+      display.drawString(3, 0, "y: " + String(pose.y));
+      display.drawString(4, 0, "theta: " + String(pose.theta));
+      char message[100];
       snprintf(message, sizeof(message), "x=%f y =%f theta=%f vl=%f vr=%f", pose.x, pose.y, pose.theta, leftVelocity, rightVelocity);
       wsCommunicator.sendText(message, strlen(message));
    }
