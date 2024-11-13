@@ -2,23 +2,24 @@
 #define DIFFERENTIALDRIVEROBOT_H
 
 #include <cmath> // For sin, cos, and fmod
+#include "../../include/forwardkinematics.h"
 
 // Pose struct
-struct Pose
-{
-    double x;
-    double y;
-    double theta;
+// struct Pose
+// {
+//     double x;
+//     double y;
+//     double theta;
 
-    Pose(double x, double y, double theta)
-        : x(x), y(y), theta(theta) {}
-    void set(double x, double y, double theta)
-    {
-        x = x;
-        y = y;
-        theta = theta;
-    }
-};
+//     Pose(double x, double y, double theta)
+//         : x(x), y(y), theta(theta) {}
+//     void set(double x, double y, double theta)
+//     {
+//         x = x;
+//         y = y;
+//         theta = theta;
+//     }
+// };
 
 class DifferentialDriveRobot
 {

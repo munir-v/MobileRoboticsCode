@@ -27,8 +27,6 @@ const double MAX_ANGULAR_VELOCITY = 0;
 const double K_POSITION = 0;
 const double K_ORIENTATION = 0;
 
-// forward kinematics interval
-const float FORWARD_KINEMATIC_INTERVAL = 100;
 
 // // TODO THIS MIGHT NEED TO BE CHANGED
 // double v_L, v_R = 0;
@@ -38,7 +36,7 @@ WsCommunicator wsCommunicator(SSID, PORT, HEARTBEAT_INTERVAL);
 MotorControl motorController(0.2, .5, .5, .5, .5, 0.34, 250);
 Display display;
 
-const unsigned long POSITION_CONTROL_INTERVAL;
+const unsigned long POSITION_CONTROL_INTERVAL = 250;
 PositionControl positionControl(
     GOALX, GOALY, GOAL_THRESHOLD, TRACK_WIDTH, MAX_LINEAR_VELOCITY, MAX_ANGULAR_VELOCITY, K_POSITION, K_ORIENTATION, POSITION_CONTROL_INTERVAL);
 
@@ -100,7 +98,7 @@ void loop()
    float leftVelocity = motorController.getLeftVelocity();
    float rightVelocity = motorController.getRightVelocity();
 
-   diffDriveRobot.forward_kinematics(leftVelocity, rightVelocity, FORWARD_KINEMATIC_INTERVAL);
+   diffDriveRobot.forward_kinematics(leftVelocity, rightVelocity, POSITION_CONTROL_INTERVAL);
 
    Pose pose = diffDriveRobot.getPose();
    bool updateVelocities = positionControl.loopStep(pose, leftVelocity, rightVelocity);

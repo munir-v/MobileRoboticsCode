@@ -3,16 +3,20 @@
 
 #include "intervaltimer.h"
 
-struct Pose {
-  float x;
-  float y;
-  float theta;
-  Pose(float x, float y, float theta) : x(x), y(y), theta(theta) {}
-  void set(float newX, float newY, float newTheta) {
-    x = newX;
-    y = newY;
-    theta = newTheta;
-  }
+struct Pose
+{
+    double x;
+    double y;
+    double theta;
+
+    Pose(double x, double y, double theta) : x(x), y(y), theta(theta) {}
+    Pose() : x(0.0), y(0.0), theta(0.0) {} // Default constructor
+    void set(double x, double y, double theta)
+    {
+        this->x = x;
+        this->y = y;
+        this->theta = theta;
+    }
 };
 
 class ForwardKinematics {
