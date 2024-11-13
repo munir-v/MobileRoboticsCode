@@ -86,12 +86,12 @@ void loop()
       double x = diffDriveRobot.get_x();
       double y = diffDriveRobot.get_y();
       double theta = diffDriveRobot.get_theta();
-      Serial.print("x: ");
-      Serial.print(x);
-      Serial.print(", y: ");
-      Serial.print(y);
-      Serial.print(", theta: ");
-      Serial.println(theta);
+      // Serial.print("x: ");
+      // Serial.print(x);
+      // Serial.print(", y: ");
+      // Serial.print(y);
+      // Serial.print(", theta: ");
+      // Serial.println(theta);
     }
   }
   else
