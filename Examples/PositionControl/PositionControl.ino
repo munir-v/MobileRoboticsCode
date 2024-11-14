@@ -84,8 +84,6 @@ void reset()
 //
 void loop()
 {
-   Serial.println("Entering loop...");
-
    // Process WebSocket communication
    wsCommunicator.loopStep();
 
@@ -97,8 +95,6 @@ void loop()
 
    display.loopStep();
 
-   Serial.println("Motor...");
-
    motorController.loopStep(wsCommunicator.isEnabled());
 
    float leftVelocity = motorController.getLeftVelocity();
@@ -108,7 +104,6 @@ void loop()
    Pose pose = forwardKinematics.getPose();
    bool shouldUpdateVelocities = positionControl.loopStep(pose, leftVelocity, rightVelocity);
 
-   Serial.println("Update vel...");
    if (shouldUpdateVelocities)
    {
       motorController.setTargetVelocity(leftVelocity, rightVelocity);
@@ -117,9 +112,7 @@ void loop()
    if (messageTimer)
    {
       Pose pose = forwardKinematics.getPose();
-      Serial.println("Send message...");
       snprintf(message, sizeof(message), "x=%f y=%f theta=%f vl=%f vr=%f", pose.x, pose.y, pose.theta, leftVelocity, rightVelocity);
-      Serial.println(message);
       wsCommunicator.sendText(message, strlen(message));
    }
 }
