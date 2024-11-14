@@ -15,7 +15,7 @@ WsCommunicator wsCommunicator(SSID, PORT, HEARTBEAT_INTERVAL);
 const float WHEEL_DIAMETER = 0.086;
 const float WHEEL_CIRCUMFERENCE = PI * WHEEL_DIAMETER;
 const float LEFT_GAIN = 0.5;
-const float RIGHT_GAIN = 0.5;
+const float RIGHT_GAIN = 0.7;
 const float MAX_STEP = 0.5;
 const float MAX_LINEAR_VELOCITY = 0.5;
 const long MIN_PWM_PERCENT = 0.34;
@@ -34,11 +34,11 @@ ForwardKinematics forwardKinematics(TRACK_WIDTH, POSITION_CONTROL_INTERVAL);
 // position control configs
 const double GOALX = 1;
 const double GOALY = 1;
-const double GOAL_THRESHOLD = .1;
+const double GOAL_THRESHOLD = .2;
 const double PC_TRACK_WIDTH = 0.18;
 const double MAX_ANGULAR_VELOCITY = 1.0;
-const double K_POSITION = 1.0;
-const double K_ORIENTATION = 2.0;
+const double K_POSITION = 1.5;
+const double K_ORIENTATION = 2.5;
 
 PositionControl positionControl(
     GOALX, GOALY, GOAL_THRESHOLD, PC_TRACK_WIDTH, MAX_LINEAR_VELOCITY, MAX_ANGULAR_VELOCITY, K_POSITION, K_ORIENTATION, POSITION_CONTROL_INTERVAL);
@@ -58,9 +58,6 @@ void setup()
    motorController.setup();
 
    forwardKinematics.setup();
-
-   // Set initial motor target velocity
-   // motorController.setTargetVelocity(0.1); // 0.1 m/s
 
    // Initialize display
    display.setup();
@@ -84,7 +81,6 @@ void reset()
 //
 void loop()
 {
-   // Process WebSocket communication
    wsCommunicator.loopStep();
 
    if (wsCommunicator.resetFlagIsSet())
