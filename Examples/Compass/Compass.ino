@@ -3,6 +3,7 @@
 #include "../PositionControl/positioncontrol.h"
 #include "../ForwardKinematics/kinematics.h"
 #include "../../include/display.h"
+#include "./compass.h"
 
 // WSCOMMUNICATOR CONFIGS
 const char *SSID = "Pomona";
@@ -26,6 +27,7 @@ MotorControl motorController(WHEEL_CIRCUMFERENCE, LEFT_GAIN, RIGHT_GAIN, MAX_STE
 
 Display display;
 IntervalTimer messageTimer(500);
+Compass compass;
 
 const float TRACK_WIDTH = 0.18;
 // float trackWidth, unsigned long interval
@@ -53,6 +55,10 @@ void setup()
 
    // Initialize the network communicator
    wsCommunicator.setup();
+
+   //Initialize the compass
+   compass.setup();
+   compass.setSmoothing(3, true);
 
    // Initialize motor control
    motorController.setup();
@@ -93,11 +99,16 @@ void loop()
 
    motorController.loopStep(wsCommunicator.isEnabled());
 
+   compass.read();
+   int compass_theta = compass.getAzimuth();
+
    float leftVelocity = motorController.getLeftVelocity();
    float rightVelocity = motorController.getRightVelocity();
    forwardKinematics.loopStep(leftVelocity, rightVelocity);
 
    Pose pose = forwardKinematics.getPose();
+   //Potential typing error since compass_theta is an int and pose.theta is a double?
+   pose.theta = (pose.theta + compass_theta)/2;
    bool shouldUpdateVelocities = positionControl.loopStep(pose, leftVelocity, rightVelocity);
 
    if (shouldUpdateVelocities)
