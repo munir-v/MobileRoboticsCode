@@ -69,7 +69,9 @@ class GoalPositionControl:
         self.K_position = K_position
 
     def update(self, pose: Pose, threshold: float) -> tuple[float, float]:
-        print(self.iteration)
+        if self.iteration >= len(self.goal_x):
+            return 0, 0  # Stop updating velocities if all goals are reached
+
         dx = self.goal_x[self.iteration] - pose.x
         dy = self.goal_y[self.iteration] - pose.y
 
@@ -77,7 +79,7 @@ class GoalPositionControl:
 
         if d_error < threshold:
             self.iteration += 1
-            if self.iteration >= 4:
+            if self.iteration >= len(self.goal_x):  # Check after increment
                 return 0, 0
 
         v = min(self.K_position * d_error, self.max_velocity_linear)
@@ -91,6 +93,7 @@ class GoalPositionControl:
         right_velocity = v + theta_dot * self.track_width / 2
 
         return left_velocity, right_velocity
+
 
 def simulate(duration: float,
              time_step: float,
@@ -133,7 +136,7 @@ def main():
     # TODO: program arguments
 
     GOAL_X = [-1, 3, 2, -2, 0]
-    GOAL_Y = [1, 1, 3, 3, -2]
+    GOAL_Y = [1, 1, 2, 3, -2]
     GOAL_THRESHOLD = 0.2
 
     MAX_VELOCITY_ANGULAR = 1
@@ -144,7 +147,7 @@ def main():
     TRACK_WIDTH = 0.17
 
     TIME_STEP = 0.1
-    DURATION = 500
+    DURATION = 200
 
     poses = simulate(DURATION, TIME_STEP, TRACK_WIDTH, GOAL_X, GOAL_Y, GOAL_THRESHOLD,
              MAX_VELOCITY_ANGULAR, MAX_VELOCITY_LINEAR, K_ORIENTATION, K_POSITION)
