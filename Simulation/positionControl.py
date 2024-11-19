@@ -1,5 +1,6 @@
+#!/usr/bin/env python
 #!/opt/homebrew/Caskroom/miniforge/base/envs/visualize/bin/python
-# You probably want to change the above line to: #!/usr/bin/env python
+# You probably want to change the above line to: 
 
 from __future__ import annotations
 
@@ -47,14 +48,15 @@ class ForwardKinematics:
 class GoalPositionControl:
     def __init__(
         self,
-        goal_x: float,
-        goal_y: float,
+        goal_x,
+        goal_y,
         max_velocity_angular: float,
         max_velocity_linear: float,
         track_width: float,
         K_orientation: float,
         K_position: float,
     ):
+        self.iteration = 0
         self.goal_x = goal_x
         self.goal_y = goal_y
 
@@ -67,13 +69,16 @@ class GoalPositionControl:
         self.K_position = K_position
 
     def update(self, pose: Pose, threshold: float) -> tuple[float, float]:
-        dx = self.goal_x - pose.x
-        dy = self.goal_y - pose.y
+        print(self.iteration)
+        dx = self.goal_x[self.iteration] - pose.x
+        dy = self.goal_y[self.iteration] - pose.y
 
         d_error = ((dx * dx) + (dy * dy)) ** 0.5
 
         if d_error < threshold:
-            return 0, 0
+            self.iteration += 1
+            if self.iteration >= 4:
+                return 0, 0
 
         v = min(self.K_position * d_error, self.max_velocity_linear)
 
@@ -90,8 +95,8 @@ class GoalPositionControl:
 def simulate(duration: float,
              time_step: float,
              track_width: float,
-             goal_x: float,
-             goal_y: float,
+             goal_x,
+             goal_y,
              goal_threshold: float,
              max_velocity_angular: float,
              max_velocity_linear: float,
@@ -122,12 +127,13 @@ def simulate(duration: float,
 
     return poses
 
+
 def main():
     # TODO: define an argument parser
     # TODO: program arguments
 
-    GOAL_X = -1
-    GOAL_Y = 1
+    GOAL_X = [-1, 3, 2, -2, 0]
+    GOAL_Y = [1, 1, 3, 3, -2]
     GOAL_THRESHOLD = 0.2
 
     MAX_VELOCITY_ANGULAR = 1
@@ -138,7 +144,7 @@ def main():
     TRACK_WIDTH = 0.17
 
     TIME_STEP = 0.1
-    DURATION = 20
+    DURATION = 500
 
     poses = simulate(DURATION, TIME_STEP, TRACK_WIDTH, GOAL_X, GOAL_Y, GOAL_THRESHOLD,
              MAX_VELOCITY_ANGULAR, MAX_VELOCITY_LINEAR, K_ORIENTATION, K_POSITION)
@@ -149,7 +155,10 @@ def main():
     print(poses[-1])
 
     plt.plot(xs, ys)
-    plt.plot([GOAL_X], [GOAL_Y], 'o')
+    for i in range(len(GOAL_X)):
+        plt.plot([GOAL_X[i]], [GOAL_Y[i]], 'o')
+        plt.text(GOAL_X[i], GOAL_Y[i], f'{i+1}', fontsize=12)
+        
     plt.gca().set_aspect('equal', adjustable='box')
     plt.get_current_fig_manager().window.wm_geometry('+2600+400')
     plt.show()
