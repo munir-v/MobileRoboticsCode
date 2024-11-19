@@ -44,6 +44,8 @@ def position_control(pose, goal, K_POSITION, K_ORIENTATION,
 dt = 0.01
 TIME_END = 10.0
 TRACK_WIDTH = 0.5
+MEAN = 0
+STD_DEV = 2
 
 parameter_sets = [
     {'GOAL': (1, 1), 'K_POSITION': 1.0, 'K_ORIENTATION': 2.0,
@@ -90,6 +92,8 @@ for idx, params in enumerate(parameter_sets):
             params['MAX_ANGULAR_VELOCITY'],
             TRACK_WIDTH
         )
+        v_left += np.random.normal(MEAN, STD_DEV)
+        v_right += np.random.normal(MEAN, STD_DEV)
         xs.append(pose.x)
         ys.append(pose.y)
         t += dt
