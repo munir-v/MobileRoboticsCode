@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from collections import deque
 
 class Pose:
     def __init__(self, x=0, y=0, theta=0):
@@ -16,6 +17,7 @@ def forward_kinematics(pose, v_left, v_right, dt, track_width):
     pose.theta += theta_dot * dt
 
     return pose
+
 
 def position_control(pose, goal, K_POSITION, K_ORIENTATION,
                      MAX_LINEAR_VELOCITY, MAX_ANGULAR_VELOCITY, track_width):
