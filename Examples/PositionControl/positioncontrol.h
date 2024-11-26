@@ -57,6 +57,12 @@ public:
 
         return true;
     }
+
+    void setGoal(float newGoalX, float newGoalY)
+    {
+        goalX = newGoalX;
+        goalY = newGoalY;
+    }
 };
 
 #endif // POSITIONCONTROL_H
