@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #!/opt/homebrew/Caskroom/miniforge/base/envs/visualize/bin/python
-# You probably want to change the above line to: 
+# You probably want to change the above line to:
 
 from __future__ import annotations
 
@@ -15,37 +15,36 @@ import matplotlib.pyplot as plt
 
 matplotlib.use("TkAgg")
 
-
-
 grid = [
-    [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], #1
-    [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], #2
-    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], #3
-    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], #4 door hallway ends
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1], #5
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1], #6
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], #7
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], #8
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], #9
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], #10
-    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], #11
-    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], #12 first row ends
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], #13
-    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], #14 second row ends
-    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], #15
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], #16 third row start 
-    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], #17
-    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], #18
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], #19
-    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], #20
-    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], #21
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], #22
-    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], #23
-    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], #24
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], #25
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], #26
-    [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0]  #27
+    [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],  # 1
+    [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],  # 2
+    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],  # 3
+    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],  # 4 door hallway ends
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],  # 5
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],  # 6
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],  # 9
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],  # 10
+    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],  # 11
+    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],  # 12 first row ends
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 13
+    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],  # 14 second row ends
+    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],  # 15
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 16 third row start
+    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],  # 17
+    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],  # 18
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 19
+    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],  # 20
+    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],  # 21
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 22
+    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],  # 23
+    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],  # 24
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 25
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 26
+    [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0],  # 27
 ]
+
 
 def wrap_to_pi(angle: float) -> float:
     return (angle + pi) % (2 * pi) - pi
@@ -129,52 +128,52 @@ class GoalPositionControl:
 
         return left_velocity, right_velocity
 
-def bfs(r, c, tr, tc, grid):
-    print("running bfs")
-    m, n = len(grid), len(grid[0])
-    visited = set()
-    parent = {(r, c): None}
-    q = deque()
-    visited.add((r, c))
-    q.append((r, c))
-    while q:
-        current = q.popleft()
-        if current[0] == tr and current[1] == tc:
+
+def bfs(start_x, start_y, goal_x, goal_y, grid):
+    from collections import deque
+
+    num_rows = len(grid)
+    num_cols = len(grid[0])
+    visited = [[False for _ in range(num_cols)] for _ in range(num_rows)]
+    parents = {}
+    queue = deque()
+    queue.append((start_x, start_y))
+    visited[start_y][start_x] = True  # Note: grid[y][x]
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # (dy, dx)
+    while queue:
+        current = queue.popleft()
+        x, y = current
+        if x == goal_x and y == goal_y:
             path = []
-            while current is not None:
-                path.append(current)
-                current = parent[current]
-            print("about to return path")
-            return path[::-1]
-        row, col = current
-        neighbors = [
-            [row - 1, col],
-            [row + 1, col],
-            [row, col + 1],
-            [row, col - 1],
-            [row - 1, col - 1],
-            [row - 1, col + 1],
-            [row + 1, col + 1],
-            [row + 1, col - 1],
-        ]
-        for neighbor in neighbors:
-            a, b = neighbor[0], neighbor[1]
-            if (a in range(m) and b in range(n)) and grid[a][b] == 1 and (a, b) not in visited:
-                q.append((a, b))
-                visited.add((a, b))
-                parent[(a, b)] = current
+            while (x, y) != (start_x, start_y):
+                path.append((x, y))
+                x, y = parents[(x, y)]
+            path.append((start_x, start_y))
+            path.reverse()
+            return path
+        for dx, dy in directions:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < num_cols and 0 <= ny < num_rows:
+                if not visited[ny][nx] and grid[ny][nx] == 0:
+                    visited[ny][nx] = True
+                    parents[(nx, ny)] = (x, y)
+                    queue.append((nx, ny))
+    # If no path is found
+    return []
 
 
-def simulate(duration: float,
-             time_step: float,
-             track_width: float,
-             goal_x,
-             goal_y,
-             goal_threshold: float,
-             max_velocity_angular: float,
-             max_velocity_linear: float,
-             K_orientation: float,
-             K_position: float) -> list[Pose]:
+def simulate(
+    duration: float,
+    time_step: float,
+    track_width: float,
+    goal_x,
+    goal_y,
+    goal_threshold: float,
+    max_velocity_angular: float,
+    max_velocity_linear: float,
+    K_orientation: float,
+    K_position: float,
+) -> list[Pose]:
     time = 0
 
     forward_kinematics = ForwardKinematics(track_width)
@@ -221,10 +220,10 @@ def main():
     parser.add_argument("--duration", type=float, default=800)
     args = parser.parse_args()
 
-    start_x = 0
-    start_y = 0
-    goal_x = 10
-    goal_y = 10
+    start_x = 2
+    start_y = 2
+    goal_x = 4
+    goal_y = 4
 
     bfs_path = bfs(start_x, start_y, goal_x, goal_y, grid)
     print("bfs_path:", bfs_path)
@@ -243,19 +242,29 @@ def main():
     TIME_STEP = 0.1
     DURATION = 200
 
-    poses = simulate(DURATION, TIME_STEP, TRACK_WIDTH, x_path, y_path, GOAL_THRESHOLD,
-             MAX_VELOCITY_ANGULAR, MAX_VELOCITY_LINEAR, K_ORIENTATION, K_POSITION)
+    poses = simulate(
+        DURATION,
+        TIME_STEP,
+        TRACK_WIDTH,
+        x_path,
+        y_path,
+        GOAL_THRESHOLD,
+        MAX_VELOCITY_ANGULAR,
+        MAX_VELOCITY_LINEAR,
+        K_ORIENTATION,
+        K_POSITION,
+    )
 
     xs = [p.x for p in poses]
     ys = [p.y for p in poses]
 
     plt.plot(xs, ys)
     for i in range(len(x_path)):
-        plt.plot([x_path[i]], [y_path[i]], 'o')
-        plt.text(x_path[i], y_path[i], f'{i+1}', fontsize=12)
-        
-    plt.gca().set_aspect('equal', adjustable='box')
-    plt.get_current_fig_manager().window.wm_geometry('+2600+400')
+        plt.plot([x_path[i]], [y_path[i]], "o")
+        plt.text(x_path[i], y_path[i], f"{i+1}", fontsize=12)
+
+    plt.gca().set_aspect("equal", adjustable="box")
+    plt.get_current_fig_manager().window.wm_geometry("+2600+400")
     plt.plot([args.goal_x], [args.goal_y], "o")
     plt.gca().set_aspect("equal", adjustable="box")
     plt.get_current_fig_manager().window.wm_geometry("+2600+400")
