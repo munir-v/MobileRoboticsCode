@@ -6,13 +6,15 @@ from __future__ import annotations
 
 from collections import deque
 
+from argparse import ArgumentParser
 from dataclasses import dataclass
 from math import atan2, cos, pi, sin
 
 import matplotlib
 import matplotlib.pyplot as plt
 
-matplotlib.use('TkAgg')
+matplotlib.use("TkAgg")
+
 
 
 grid = [['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'], 
@@ -101,8 +103,8 @@ class GoalPositionControl:
         max_velocity_angular: float,
         max_velocity_linear: float,
         track_width: float,
-        K_orientation: float,
-        K_position: float,
+        gain_orientation: float,
+        gain_position: float,
     ):
         self.iteration = 0
         self.goal_x = goal_x
@@ -113,8 +115,8 @@ class GoalPositionControl:
 
         self.track_width = track_width
 
-        self.K_orientation = K_orientation
-        self.K_position = K_position
+        self.gain_orientation = gain_orientation
+        self.gain_position = gain_position
 
     def update(self, pose: Pose, threshold: float) -> tuple[float, float]:
         if self.iteration >= len(self.goal_x):
@@ -130,11 +132,11 @@ class GoalPositionControl:
             if self.iteration >= len(self.goal_x):  # Check after increment
                 return 0, 0
 
-        v = min(self.K_position * d_error, self.max_velocity_linear)
+        v = min(self.gain_position * d_error, self.max_velocity_linear)
 
         theta_to_goal = atan2(dy, dx)
         theta_error = theta_to_goal - pose.theta
-        theta_dot = min(self.K_orientation * theta_error, self.max_velocity_angular)
+        theta_dot = min(self.gain_orientation * theta_error, self.max_velocity_angular)
         theta_dot = max(theta_dot, -self.max_velocity_angular)
 
         left_velocity = v - theta_dot * self.track_width / 2
@@ -177,25 +179,44 @@ def simulate(duration: float,
              K_orientation: float,
              K_position: float) -> list[Pose]:
 
+def simulate(
+    duration: float,
+    time_step: float,
+    track_width: float,
+    goal_x: float,
+    goal_y: float,
+    goal_threshold: float,
+    max_velocity_angular: float,
+    max_velocity_linear: float,
+    K_orientation: float,
+    K_position: float,
+) -> list[Pose]:
     time = 0
 
     forward_kinematics = ForwardKinematics(track_width)
-    position_control = GoalPositionControl( goal_x, goal_y, max_velocity_angular,
-                                           max_velocity_linear, track_width,
-        K_orientation, K_position
+    position_control = GoalPositionControl(
+        goal_x,
+        goal_y,
+        max_velocity_angular,
+        max_velocity_linear,
+        track_width,
+        K_orientation,
+        K_position,
     )
 
-    velocity_left = 0
-    velocity_right = 0
+    v_left = 0
+    v_right = 0
 
     poses = [forward_kinematics.pose.copy()]
 
     # Numerical simulation loop
     while time < duration:
-        pose = forward_kinematics.update(velocity_left, velocity_right, time_step)
-        velocity_left, velocity_right = position_control.update(pose, goal_threshold)
-
+        # Update the pose based on kinematics
+        pose = forward_kinematics.update(v_left, v_right, time_step)
         poses.append(pose.copy())
+
+        # Update position control based on pose
+        v_left, v_right = position_control.update(pose, goal_threshold)
 
         time += time_step
 
@@ -203,8 +224,18 @@ def simulate(duration: float,
 
 
 def main():
-    # TODO: define an argument parser
-    # TODO: program arguments
+    parser = ArgumentParser("Path following simulation")
+    parser.add_argument("--goal-threshold", type=float, default=0.2)
+    parser.add_argument("--goal-x", type=float, default=1)
+    parser.add_argument("--goal-y", type=float, default=1)
+    parser.add_argument("--max-velocity-angular", type=float, default=1)
+    parser.add_argument("--max-velocity-linear", type=float, default=0.3)
+    parser.add_argument("--gain-orientation", type=float, default=1)
+    parser.add_argument("--gain-position", type=float, default=0.2)
+    parser.add_argument("--track-width", type=float, default=0.17)
+    parser.add_argument("--time-step", type=float, default=0.1)
+    parser.add_argument("--duration", type=float, default=800)
+    args = parser.parse_args()
 
     start_x = 0
     start_y = 0
@@ -229,6 +260,18 @@ def main():
 
     poses = simulate(DURATION, TIME_STEP, TRACK_WIDTH, GOAL_X, GOAL_Y, GOAL_THRESHOLD,
              MAX_VELOCITY_ANGULAR, MAX_VELOCITY_LINEAR, K_ORIENTATION, K_POSITION)
+    poses = simulate(
+        args.duration,
+        args.time_step,
+        args.track_width,
+        args.goal_x,
+        args.goal_y,
+        args.goal_threshold,
+        args.max_velocity_angular,
+        args.max_velocity_linear,
+        args.gain_orientation,
+        args.gain_position,
+    )
 
     xs = [p.x for p in poses]
     ys = [p.y for p in poses]
@@ -242,7 +285,11 @@ def main():
         
     plt.gca().set_aspect('equal', adjustable='box')
     plt.get_current_fig_manager().window.wm_geometry('+2600+400')
+    plt.plot([args.goal_x], [args.goal_y], "o")
+    plt.gca().set_aspect("equal", adjustable="box")
+    plt.get_current_fig_manager().window.wm_geometry("+2600+400")
     plt.show()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
