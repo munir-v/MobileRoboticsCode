@@ -134,8 +134,8 @@ def bfs(r, c, tr, tc, grid):
     visited = set()
     parent = {(r, c): None}
     q = deque()
-    visited.add((r,c))
-    q.append((r,c))
+    visited.add((r, c))
+    q.append((r, c))
     while q:
         current = q.popleft()
         if current[0] == tr and current[1] == tc:
@@ -145,13 +145,23 @@ def bfs(r, c, tr, tc, grid):
                 current = parent[current]
             return path[::-1]
         row, col = current
-        neighbors = [[row - 1, col], [row + 1, col], [row, col + 1], [row, col - 1], [row - 1, col - 1], [row - 1, col + 1], [row + 1, col + 1], [row + 1, col - 1]]
+        neighbors = [
+            [row - 1, col],
+            [row + 1, col],
+            [row, col + 1],
+            [row, col - 1],
+            [row - 1, col - 1],
+            [row - 1, col + 1],
+            [row + 1, col + 1],
+            [row + 1, col - 1],
+        ]
         for neighbor in neighbors:
             a, b = neighbor[0], neighbor[1]
-            if (row in range(m) and col in range(n)) and grid[row][col] == "1" and (row, col) not in visited:
+            if (a in range(m) and b in range(n)) and grid[a][b] == 1 and (a, b) not in visited:
                 q.append((a, b))
                 visited.add((a, b))
                 parent[(a, b)] = current
+
 
 def simulate(duration: float,
              time_step: float,
