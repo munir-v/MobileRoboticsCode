@@ -222,7 +222,7 @@ def main():
 
     start_x = 2
     start_y = 2
-    goal_x = 4
+    goal_x = 2
     goal_y = 4
 
     bfs_path = bfs(start_x, start_y, goal_x, goal_y, grid)
