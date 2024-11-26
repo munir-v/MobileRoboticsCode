@@ -178,19 +178,6 @@ def simulate(duration: float,
              max_velocity_linear: float,
              K_orientation: float,
              K_position: float) -> list[Pose]:
-
-def simulate(
-    duration: float,
-    time_step: float,
-    track_width: float,
-    goal_x: float,
-    goal_y: float,
-    goal_threshold: float,
-    max_velocity_angular: float,
-    max_velocity_linear: float,
-    K_orientation: float,
-    K_position: float,
-) -> list[Pose]:
     time = 0
 
     forward_kinematics = ForwardKinematics(track_width)
