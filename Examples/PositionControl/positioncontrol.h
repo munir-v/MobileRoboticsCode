@@ -46,11 +46,11 @@ public:
             return true;
         }
 
-        float v = min(K_position * d, maxLinearVelocity);
+        float v = std::min(K_position * d, maxLinearVelocity);
 
         float angleToGoal = atan2(goalY - pose.y, goalX - pose.x);
         float angleError = angleToGoal - pose.theta;
-        float thetaDot = min(K_orientation * angleError, maxAngularVelocity);
+        float thetaDot = std::min(K_orientation * angleError, maxAngularVelocity);
 
         leftVelocity = v - thetaDot * trackWidth / 2.0;
         rightVelocity = v + thetaDot * trackWidth / 2.0;
@@ -62,6 +62,12 @@ public:
     {
         goalX = newGoalX;
         goalY = newGoalY;
+    }
+
+    bool goalReached(const Pose &pose)
+    {
+        float d = sqrt((goalX - pose.x) * (goalX - pose.x) + (goalY - pose.y) * (goalY - pose.y));
+        return d < goalThreshold;
     }
 };
 

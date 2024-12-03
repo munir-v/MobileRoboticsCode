@@ -20,28 +20,33 @@ const float MAX_STEP = 0.5;
 const float MAX_LINEAR_VELOCITY = 0.5;
 const long MIN_PWM_PERCENT = 0.34;
 const unsigned long POSITION_CONTROL_INTERVAL = 250;
-// float wheelCircumference, float leftGain, float rightGain, float maxStep, float maxVelocity, long minPwmPercent,
-// unsigned long interval
+
 MotorControl motorController(WHEEL_CIRCUMFERENCE, LEFT_GAIN, RIGHT_GAIN, MAX_STEP, MAX_LINEAR_VELOCITY, MIN_PWM_PERCENT, POSITION_CONTROL_INTERVAL);
 
 Display display;
 IntervalTimer messageTimer(500);
 
 const float TRACK_WIDTH = 0.18;
-// float trackWidth, unsigned long interval
 ForwardKinematics forwardKinematics(TRACK_WIDTH, POSITION_CONTROL_INTERVAL);
 
-// position control configs
-const double GOALX = 1;
-const double GOALY = 1;
-const double GOAL_THRESHOLD = .2;
+const double GOAL_THRESHOLD = 0.2;
 const double PC_TRACK_WIDTH = 0.18;
 const double MAX_ANGULAR_VELOCITY = 1.0;
 const double K_POSITION = 1.5;
 const double K_ORIENTATION = 2.5;
 
 PositionControl positionControl(
-    GOALX, GOALY, GOAL_THRESHOLD, PC_TRACK_WIDTH, MAX_LINEAR_VELOCITY, MAX_ANGULAR_VELOCITY, K_POSITION, K_ORIENTATION, POSITION_CONTROL_INTERVAL);
+    0, 0, GOAL_THRESHOLD, PC_TRACK_WIDTH, MAX_LINEAR_VELOCITY, MAX_ANGULAR_VELOCITY, K_POSITION, K_ORIENTATION, POSITION_CONTROL_INTERVAL);
+
+// Waypoints
+const double WAYPOINTS[][2] = {
+    {2, 2},
+    {2, 3},
+    {2, 4},
+    {3, 4},
+    {4, 4}};
+const int NUM_WAYPOINTS = sizeof(WAYPOINTS) / sizeof(WAYPOINTS[0]);
+int currentWaypoint = 0;
 
 //
 // Setup function
@@ -67,13 +72,17 @@ void setup()
    display.drawString(1, 0, "Position Control");
 
    // Initialize robot's position and orientation
-   // diffDriveRobot.setup(); // Reset x, y, and theta to zero
    positionControl.setup();
+
+   reset();
 }
 
 void reset()
 {
-   forwardKinematics.setPose(0, 0, 0);
+   // Set robot pose to initial waypoint
+   forwardKinematics.setPose(WAYPOINTS[0][0], WAYPOINTS[0][1], 0);
+   currentWaypoint = 0;
+   positionControl.setGoal(WAYPOINTS[currentWaypoint][0], WAYPOINTS[currentWaypoint][1]);
 }
 
 //
@@ -100,6 +109,16 @@ void loop()
    Pose pose = forwardKinematics.getPose();
    bool shouldUpdateVelocities = positionControl.loopStep(pose, leftVelocity, rightVelocity);
 
+   // Check if the robot reached the current waypoint
+   if (positionControl.goalReached(pose))
+   {
+      currentWaypoint++;
+      if (currentWaypoint < NUM_WAYPOINTS)
+      {
+         positionControl.setGoal(WAYPOINTS[currentWaypoint][0], WAYPOINTS[currentWaypoint][1]);
+      }
+   }
+
    if (shouldUpdateVelocities)
    {
       motorController.setTargetVelocity(leftVelocity, rightVelocity);
@@ -108,7 +127,7 @@ void loop()
    if (messageTimer)
    {
       Pose pose = forwardKinematics.getPose();
-      snprintf(message, sizeof(message), "x=%f y=%f theta=%f vl=%f vr=%f", pose.x, pose.y, pose.theta, leftVelocity, rightVelocity);
+      // snprintf(message, sizeof(message), "x=%f y=%f theta=%f vl=%f vr=%f", pose.x, pose.y, pose.theta, leftVelocity, rightVelocity);
       wsCommunicator.sendText(message, strlen(message));
    }
 }
