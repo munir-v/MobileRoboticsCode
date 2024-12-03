@@ -32,13 +32,8 @@ const float TRACK_WIDTH = 0.18;
 ForwardKinematics forwardKinematics(TRACK_WIDTH, POSITION_CONTROL_INTERVAL);
 
 // position control configs
-
-const double GOAL_STATES[][2] = {{2, 2}, {2, 3}, {2, 4}, {3, 4}, {4, 4}};
-const int GOAL_COUNT = sizeof(GOAL_STATES) / sizeof(GOAL_STATES[0]);
-int currentGoalIndex = 0;
-const double GOALX = 2;
-const double GOALY = 3;
-
+const double GOALX = 1;
+const double GOALY = 1;
 const double GOAL_THRESHOLD = .2;
 const double PC_TRACK_WIDTH = 0.18;
 const double MAX_ANGULAR_VELOCITY = 1.0;
@@ -78,8 +73,7 @@ void setup()
 
 void reset()
 {
-   // [(2, 2), (2, 3), (2, 4), (3, 4), (4, 4)]
-   forwardKinematics.setPose(2, 2, 0);
+   forwardKinematics.setPose(0, 0, 0);
 }
 
 //
@@ -109,10 +103,6 @@ void loop()
    if (shouldUpdateVelocities)
    {
       motorController.setTargetVelocity(leftVelocity, rightVelocity);
-      if(leftVelocity == 0 && rightVelocity == 0){
-         currentGoalIndex = (currentGoalIndex + 1) % GOAL_COUNT; // Cycle through goals
-         positionControl.setGoal(GOAL_STATES[currentGoalIndex][0], GOAL_STATES[currentGoalIndex][1]);
-      }
    }
 
    if (messageTimer)
